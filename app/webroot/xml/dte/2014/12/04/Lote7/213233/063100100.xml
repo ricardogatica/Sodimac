@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<form:Documents xmlns:form="http://www.abbyy.com/FlexiCapture/Schemas/Export/FormData.xsd" xmlns:addData="http://www.abbyy.com/FlexiCapture/Schemas/Export/AdditionalFormData.xsd">
+	<_DTE:_DTE xmlns:_DTE="http://www.abbyy.com/FlexiCapture/Schemas/Export/DTE.xsd">
+		<_Sección_de_documento_1>
+			<_TipoDocumento>FAC</_TipoDocumento>
+			<_NumeroDocumento>063100100</_NumeroDocumento>
+			<_CodigoTienda>005</_CodigoTienda>
+			<_NombreRazonSocial>GIFT CORP SPA</_NombreRazonSocial>
+			<_RUTCliente>76142721-0</_RUTCliente>
+			<_NroOC>140814150156</_NroOC>
+			<_NroGuiaDespacho>00000-034685006</_NroGuiaDespacho>
+			<_NroPVT>000000000/00000/</_NroPVT>
+			<_CondicionPago>A120000115/09/2014</_CondicionPago>
+			<_Lote>Lote7</_Lote>
+			<_FechaProcesamiento>21:32:33 04.12.2014</_FechaProcesamiento>
+		</_Sección_de_documento_1>
+	</_DTE:_DTE>
+</form:Documents>

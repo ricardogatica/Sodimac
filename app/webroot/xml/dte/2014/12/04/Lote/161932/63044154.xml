@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<form:Documents xmlns:form="http://www.abbyy.com/FlexiCapture/Schemas/Export/FormData.xsd" xmlns:addData="http://www.abbyy.com/FlexiCapture/Schemas/Export/AdditionalFormData.xsd">
+	<_DTE:_DTE xmlns:_DTE="http://www.abbyy.com/FlexiCapture/Schemas/Export/DTE.xsd">
+		<_Sección_de_documento_1>
+			<_TipoDocumento>FAC</_TipoDocumento>
+			<_NumeroDocumento>63044154</_NumeroDocumento>
+			<_CodigoTienda>CANJE</_CodigoTienda>
+			<_NombreRazonSocial>ACETOGEN GAS CHILE SA</_NombreRazonSocial>
+			<_RUTCliente>93333000-1</_RUTCliente>
+			<_NroOC/>
+			<_NroGuiaDespacho/>
+			<_NroPVT/>
+			<_CondicionPago>CANJE</_CondicionPago>
+			<_Documentos>19376127</_Documentos>
+			<_Documentos>19376181</_Documentos>
+			<_Documentos>19427303</_Documentos>
+			<_Documentos>20322789</_Documentos>
+			<_Documentos>20322797</_Documentos>
+			<_Documentos>20324942</_Documentos>
+			<_Documentos>20342865</_Documentos>
+			<_Documentos>20348838</_Documentos>
+			<_Documentos>20387613</_Documentos>
+			<_Documentos>20417975</_Documentos>
+			<_Documentos>20417979</_Documentos>
+			<_Documentos>20458108</_Documentos>
+			<_Lote>Lote</_Lote>
+			<_FechaProcesamiento>16:19:32 04.12.2014</_FechaProcesamiento>
+		</_Sección_de_documento_1>
+	</_DTE:_DTE>
+</form:Documents>

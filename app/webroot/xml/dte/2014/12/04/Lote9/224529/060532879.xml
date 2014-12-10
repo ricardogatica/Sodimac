@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<form:Documents xmlns:form="http://www.abbyy.com/FlexiCapture/Schemas/Export/FormData.xsd" xmlns:addData="http://www.abbyy.com/FlexiCapture/Schemas/Export/AdditionalFormData.xsd">
+	<_DTE:_DTE xmlns:_DTE="http://www.abbyy.com/FlexiCapture/Schemas/Export/DTE.xsd">
+		<_Sección_de_documento_1>
+			<_TipoDocumento>FAC</_TipoDocumento>
+			<_NumeroDocumento>060532879</_NumeroDocumento>
+			<_CodigoTienda>059</_CodigoTienda>
+			<_NombreRazonSocial>CONSTRUCTORA TRIO LTDA</_NombreRazonSocial>
+			<_RUTCliente>76511190-0</_RUTCliente>
+			<_NroOC>000525</_NroOC>
+			<_NroGuiaDespacho>00000-000000000</_NroGuiaDespacho>
+			<_NroPVT>059009739/00125/D</_NroPVT>
+			<_CondicionPago>A170076704/09/2014</_CondicionPago>
+			<_Lote>Lote9</_Lote>
+			<_FechaProcesamiento>22:45:29 04.12.2014</_FechaProcesamiento>
+		</_Sección_de_documento_1>
+	</_DTE:_DTE>
+</form:Documents>

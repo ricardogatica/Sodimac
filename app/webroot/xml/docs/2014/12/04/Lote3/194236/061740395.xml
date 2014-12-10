@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<form:Documents xmlns:form="http://www.abbyy.com/FlexiCapture/Schemas/Export/FormData.xsd" xmlns:addData="http://www.abbyy.com/FlexiCapture/Schemas/Export/AdditionalFormData.xsd">
+	<_FacturaCaja:_FacturaCaja xmlns:_FacturaCaja="http://www.abbyy.com/FlexiCapture/Schemas/Export/FacturaCaja.xsd">
+		<_Sección_de_documento_1>
+			<_TipoDocumento>FAC</_TipoDocumento>
+			<_NumeroDocumento>061740395</_NumeroDocumento>
+			<_NroOC/>
+			<_Lote>Lote3</_Lote>
+			<_FechaProcesamiento>19:42:36 04.12.2014</_FechaProcesamiento>
+			<_CodigoTienda>87</_CodigoTienda>
+		</_Sección_de_documento_1>
+	</_FacturaCaja:_FacturaCaja>
+</form:Documents>

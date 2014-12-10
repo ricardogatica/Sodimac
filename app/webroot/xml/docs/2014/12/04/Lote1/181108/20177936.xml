@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<form:Documents xmlns:form="http://www.abbyy.com/FlexiCapture/Schemas/Export/FormData.xsd" xmlns:addData="http://www.abbyy.com/FlexiCapture/Schemas/Export/AdditionalFormData.xsd">
+	<_GuiaDeDespacho:_GuiaDeDespacho xmlns:_GuiaDeDespacho="http://www.abbyy.com/FlexiCapture/Schemas/Export/GuiaDeDespacho.xsd">
+		<_Sección_de_documento_1>
+			<_TipoDocumento>GC</_TipoDocumento>
+			<_NumeroDocumento>20177936</_NumeroDocumento>
+			<_NroOC/>
+			<_Lote>Lote1</_Lote>
+			<_FechaProcesamiento>18:11:08 04.12.2014</_FechaProcesamiento>
+			<_CodigoTienda>CANJE</_CodigoTienda>
+		</_Sección_de_documento_1>
+	</_GuiaDeDespacho:_GuiaDeDespacho>
+</form:Documents>

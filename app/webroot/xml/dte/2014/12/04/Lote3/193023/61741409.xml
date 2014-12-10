@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<form:Documents xmlns:form="http://www.abbyy.com/FlexiCapture/Schemas/Export/FormData.xsd" xmlns:addData="http://www.abbyy.com/FlexiCapture/Schemas/Export/AdditionalFormData.xsd">
+	<_DTE:_DTE xmlns:_DTE="http://www.abbyy.com/FlexiCapture/Schemas/Export/DTE.xsd">
+		<_Sección_de_documento_1>
+			<_TipoDocumento>FAC</_TipoDocumento>
+			<_NumeroDocumento>61741409</_NumeroDocumento>
+			<_CodigoTienda>87</_CodigoTienda>
+			<_NombreRazonSocial>CORP NACIONAL DEL COBRE D</_NombreRazonSocial>
+			<_RUTCliente>61704000-K</_RUTCliente>
+			<_NroOC>4400067343</_NroOC>
+			<_NroGuiaDespacho/>
+			<_NroPVT/>
+			<_CondicionPago>A100001494620140726</_CondicionPago>
+			<_Lote>Lote3</_Lote>
+			<_FechaProcesamiento>19:30:23 04.12.2014</_FechaProcesamiento>
+		</_Sección_de_documento_1>
+	</_DTE:_DTE>
+</form:Documents>

@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<form:Documents xmlns:form="http://www.abbyy.com/FlexiCapture/Schemas/Export/FormData.xsd" xmlns:addData="http://www.abbyy.com/FlexiCapture/Schemas/Export/AdditionalFormData.xsd">
+	<_OrdenDeCompra:_OrdenDeCompra xmlns:_OrdenDeCompra="http://www.abbyy.com/FlexiCapture/Schemas/Export/OrdenDeCompra.xsd">
+		<_Sección_de_documento_1>
+			<_TipoDocumento>OC</_TipoDocumento>
+			<_NumeroDocumento>708</_NumeroDocumento>
+			<_NroOC/>
+			<_Lote>Lote8</_Lote>
+			<_FechaProcesamiento>00:24:30 05.12.2014</_FechaProcesamiento>
+			<_CodigoTienda/>
+		</_Sección_de_documento_1>
+	</_OrdenDeCompra:_OrdenDeCompra>
+</form:Documents>

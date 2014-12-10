@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<form:Documents xmlns:form="http://www.abbyy.com/FlexiCapture/Schemas/Export/FormData.xsd" xmlns:addData="http://www.abbyy.com/FlexiCapture/Schemas/Export/AdditionalFormData.xsd">
+	<_DTE:_DTE xmlns:_DTE="http://www.abbyy.com/FlexiCapture/Schemas/Export/DTE.xsd">
+		<_Sección_de_documento_1>
+			<_TipoDocumento>FAC</_TipoDocumento>
+			<_NumeroDocumento>061516487</_NumeroDocumento>
+			<_CodigoTienda>073</_CodigoTienda>
+			<_NombreRazonSocial>IND HERNAN CORSSEN Y CIA LT</_NombreRazonSocial>
+			<_RUTCliente>84369200-1</_RUTCliente>
+			<_NroOC>532014</_NroOC>
+			<_NroGuiaDespacho>00000-000000000</_NroGuiaDespacho>
+			<_NroPVT>073039806/00000/S</_NroPVT>
+			<_CondicionPago>A1260253003/09/2014</_CondicionPago>
+			<_Lote>Lote10</_Lote>
+			<_FechaProcesamiento>22:46:56 04.12.2014</_FechaProcesamiento>
+		</_Sección_de_documento_1>
+	</_DTE:_DTE>
+</form:Documents>
