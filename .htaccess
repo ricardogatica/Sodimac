@@ -1,5 +1,7 @@
 <IfModule mod_rewrite.c>
-   RewriteEngine on
-   RewriteRule    ^$ app/webroot/    [L]
-   RewriteRule    (.*) app/webroot/$1 [L]
+	RewriteEngine on
+	RewriteRule img/(.*)/(.*)/(.*)/(.*)/(.*)/(.*)/(.*)_zoom.jpg$	img/$1/$2/$3/$4/$5/$6/$7.jpg [QSA,L]
+
+	RewriteRule ^$	app/webroot/ [L]
+	RewriteRule (.*)	app/webroot/$1 [L]
 </IfModule>

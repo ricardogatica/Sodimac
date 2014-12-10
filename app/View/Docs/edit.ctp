@@ -2,9 +2,7 @@
 <div class="container">
 	<div class="row">
 		<div class="col-lg-7">
-			<?php foreach ($details['Doc']['images'] AS $image): ?>
-				<?php echo $this->Html->image($image, array('class' => 'img-responsive')); ?>
-			<?php endforeach; ?>
+			<?php echo $this->Html->image($details['Doc']['preview_normal'], array('class' => 'img-responsive', 'data-zoom-image' => $this->Html->url($details['Doc']['preview_zoom']), 'id' => 'previewDocument')); ?>
 		</div>
 		<div class="col-lg-5">
 			<?php
@@ -33,7 +31,25 @@
 			<?php echo $this->Form->end(); ?>
 		</div>
 	</div>
+<?php if (!empty($cedibles)): ?>
 	<div class="row">
-
+	<?php foreach ($cedibles AS $row): ?>
+		<div class="col-lg-2">
+			<?php echo $this->Html->link($this->Html->image($row['Doc']['preview_normal']), array('iframe' => true, 'controller' => 'docs', 'action' => 'edit', $row['Doc']['id']), array('escape' => false)); ?>
+		</div>
+	<?php endforeach; ?>
 	</div>
+<?php endif; ?>
 </div>
+
+<?php $this->Html->script('jquery.elevateZoom-3.0.8.min.js', array('inline' => false)); ?>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('#previewDocument').on('load', function(){
+			$(this).elevateZoom({
+				zoomType: "inner",
+				cursor: "crosshair"
+			});	
+		})
+	});
+</script>
