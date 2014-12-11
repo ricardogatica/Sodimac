@@ -101,7 +101,6 @@
 				array(
 					'conditions' => array(
 						'Doc.id' => $id,
-						'Doc.dte' => 1,
 						'Doc.store_id' => array_keys($this->stores_users_active)
 					),
 					'contain' => array(
@@ -111,7 +110,20 @@
 				)
 			);
 
+			$this->request->data = $details;
+
+			$documents = $this->Doc->find(
+				'all',
+				array(
+					'conditions' => array(
+						'Doc.parent_id' => $id,
+						'Doc.store_id' => array_keys($this->stores_users_active)
+					)
+				)
+			);
+
 			$this->Doc->Type->virtualFields['name'] = 'CONCAT(Type.alias,\' (\',Type.name,\')\')';
+
 			$types = $this->Doc->Type->find(
 				'list',
 				array(
@@ -122,18 +134,7 @@
 				)
 			);
 
-			$this->request->data = $details;
-
-			$cedibles = $this->Doc->find(
-				'all',
-				array(
-					'conditions' => array(
-						'Doc.parent_id' => $id
-					)
-				)
-			);
-
-			$this->set(compact('details', 'types', 'cedibles'));
+			$this->set(compact('details', 'documents', 'types'));
 		}
 
 		public function pdf($id = null) {
@@ -151,6 +152,16 @@
 					)
 				)
 			);
+
+			if (!$details['Doc']['match']) {
+				$this->Session->setFlash(__('El DTE no tiene cedibles asociados.'));
+				$this->redirect('/');
+			}
+
+			if (empty($details['Doc']['images'])) {
+				$this->Session->setFlash(__('El DTE no tiene imagen.'));
+				$this->redirect('/');
+			}
 
 			$documents = $this->Doc->find(
 				'all',
@@ -172,32 +183,33 @@
 			;
 			
 			foreach ($documents AS $row) {
-
 				$images = array();
-				if ($row['Doc']['images']) {
-					$images = unserialize($row['Doc']['images']);
+				if (!empty($row['Doc']['images'])) {
 
-					foreach ($images AS $img) {
-						if (file_exists($img)) {
-							list($width, $height, $type, $attr) = getimagesize($img);
+					foreach ($row['Doc']['images'] AS $image) {
 
-							$min_width = 700;
-							$min_height = 900;
-							
-							$ratio = $width / $min_width;
-							if ($height > $min_height)
-								$ratio = $height / $min_height;
-							
-							$ratio = max($ratio, 1.0);
+						if (!file_exists(WWW_ROOT . $image['path']))
+							continue;
 
-							$pdf.= '<img src="" style="width:'.$img_width.'px;">'
-							. '<pd4ml:page.break>'
-							;
-						}
-							
-					}
-					
+						list($width, $height, $type, $attr) = getimagesize($image['normal']);
+
+						$min_width = 700;
+						$min_height = 900;
+						
+						$ratio = $width / $min_width;
+						if ($height > $min_height)
+							$ratio = $height / $min_height;
+						
+						$ratio = max($ratio, 1.0);
+
+						$pdf.= '<img src="" style="width:'.$img_width.'px;">'
+						. '<pd4ml:page.break>'
+						;
+					}	
 				}
+
+				debug($pdf);
+				die;
 				
 
 
@@ -373,9 +385,11 @@
 
 			\App::uses('Xml', 'Utility');
 
+			// [Tienda]/[Año]/[Mes]/[Día]/[Lote]/[Hora]/*.xml
+
 			$xmls = Hash::merge(
-				glob(WWW_ROOT . 'xml' . DS . 'dte' . DS . '*' . DS . '*' . DS . '*' . DS . '*' . DS . '*' . DS . '*.xml'),
-				glob(WWW_ROOT . 'xml' . DS . 'docs' . DS . '*' . DS . '*' . DS . '*' . DS . '*' . DS . '*' . DS . '*.xml')
+				glob(WWW_ROOT . 'xml' . DS . 'dte' . DS . '*' . DS . '*' . DS . '*' . DS . '*' . DS . '*' . DS . '*' . DS . '*.xml'),
+				glob(WWW_ROOT . 'xml' . DS . 'docs' . DS . '*' . DS . '*' . DS . '*' . DS . '*' . DS . '*' . DS . '*' . DS . '*.xml')
 			);
 
 			$imports = 0;
@@ -453,7 +467,7 @@
 						$doc['processed'] = date('Y-m-d H:i:s', strtotime($data['_FechaProcesamiento']));
 
 					if (!empty($doc['processed']) && !empty($doc['lote'])) {
-						$path = WWW_ROOT . 'img' . DS . ($dte ? 'dte' : 'docs') . DS . date('Y' . DS . 'm' . DS . 'd', strtotime($doc['processed'])) . DS . $doc['lote'] . DS . date('His', strtotime($doc['processed']));
+						$path = WWW_ROOT . 'img' . DS . ($dte ? 'dte' : 'docs') . DA . $data['_CodigoTienda'] . DS . date('Y' . DS . 'm' . DS . 'd', strtotime($doc['processed'])) . DS . $doc['lote'] . DS . date('His', strtotime($doc['processed']));
 
 						if (is_dir($path)) {
 							$images = glob($path . DS . '{*.jpeg,*.jpg}', GLOB_BRACE);

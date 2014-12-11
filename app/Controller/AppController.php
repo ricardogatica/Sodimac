@@ -41,6 +41,10 @@
 
 			$stores_users = array();
 
+			if (isset($this->request->params['iframe'])) {
+				$this->layout = 'iframe';
+			}
+
 			$profiles = array(
 				'admin' => __('Administrador'),
 				'user' => __('Usuario')
@@ -89,4 +93,5 @@
 
 			$this->set(compact('stores_users', 'profiles'));
 		}
+
 	}
