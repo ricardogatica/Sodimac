@@ -31,9 +31,9 @@
 			<?php echo $this->Form->end(); ?>
 		</div>
 	</div>
-<?php if (!empty($cedibles)): ?>
+<?php if (!empty($documents)): ?>
 	<div class="row">
-	<?php foreach ($cedibles AS $row): ?>
+	<?php foreach ($documents AS $row): ?>
 		<div class="col-lg-2">
 			<?php echo $this->Html->link($this->Html->image($row['Doc']['preview_normal'], array('class' => 'img-responsive')), array('iframe' => true, 'controller' => 'docs', 'action' => 'edit', $row['Doc']['id']), array('escape' => false, 'class' => 'fancybox fancybox.iframe')); ?>
 		</div>

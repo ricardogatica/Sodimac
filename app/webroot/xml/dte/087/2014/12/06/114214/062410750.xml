@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<form:Documents xmlns:form="http://www.abbyy.com/FlexiCapture/Schemas/Export/FormData.xsd" xmlns:addData="http://www.abbyy.com/FlexiCapture/Schemas/Export/AdditionalFormData.xsd">
+	<_DTE:_DTE xmlns:_DTE="http://www.abbyy.com/FlexiCapture/Schemas/Export/DTE.xsd">
+		<_Sección_de_documento_1>
+			<_TipoDocumento>FAC</_TipoDocumento>
+			<_NumeroFactura>062410750</_NumeroFactura>
+			<_CodigoTienda>087</_CodigoTienda>
+			<_NombreRazonSocial>MUÑOZ RIQUELME JOSE TOMAS</_NombreRazonSocial>
+			<_RUTCliente>11568146-K</_RUTCliente>
+			<_NroOC>608</_NroOC>
+			<_NroGuiaDespacho>00000-000000000</_NroGuiaDespacho>
+			<_NroPVT>051023613/01552/D</_NroPVT>
+			<_CondicionPago>A1129350005/09/2014</_CondicionPago>
+			<_Lote>Lote VtaDirAnticipada</_Lote>
+			<_FechaProcesamiento>11:42:14 06.12.2014</_FechaProcesamiento>
+		</_Sección_de_documento_1>
+	</_DTE:_DTE>
+</form:Documents>

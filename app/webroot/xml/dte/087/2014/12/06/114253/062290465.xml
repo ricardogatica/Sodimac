@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<form:Documents xmlns:form="http://www.abbyy.com/FlexiCapture/Schemas/Export/FormData.xsd" xmlns:addData="http://www.abbyy.com/FlexiCapture/Schemas/Export/AdditionalFormData.xsd">
+	<_DTE:_DTE xmlns:_DTE="http://www.abbyy.com/FlexiCapture/Schemas/Export/DTE.xsd">
+		<_Sección_de_documento_1>
+			<_TipoDocumento>FAC</_TipoDocumento>
+			<_NumeroFactura>062290465</_NumeroFactura>
+			<_CodigoTienda>087</_CodigoTienda>
+			<_NombreRazonSocial>METSO MINERALS (CHILE) S A</_NombreRazonSocial>
+			<_RUTCliente>93077000-0</_RUTCliente>
+			<_NroOC>4501184027</_NroOC>
+			<_NroGuiaDespacho>00000-000000000</_NroGuiaDespacho>
+			<_NroPVT>027006408/00000/S</_NroPVT>
+			<_CondicionPago>A177350001/09/2014</_CondicionPago>
+			<_Lote>Lote VtaStockBodegaAnticip</_Lote>
+			<_FechaProcesamiento>11:42:53 06.12.2014</_FechaProcesamiento>
+		</_Sección_de_documento_1>
+	</_DTE:_DTE>
+</form:Documents>

@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<form:Documents xmlns:form="http://www.abbyy.com/FlexiCapture/Schemas/Export/FormData.xsd" xmlns:addData="http://www.abbyy.com/FlexiCapture/Schemas/Export/AdditionalFormData.xsd">
+	<_GuiaDeDespachoSodimac:_GuiaDeDespachoSodimac xmlns:_GuiaDeDespachoSodimac="http://www.abbyy.com/FlexiCapture/Schemas/Export/GuiaDeDespachoSodimac.xsd">
+		<_Sección_de_documento_1>
+			<_TipoDocumento>GD</_TipoDocumento>
+			<_NumeroDocumento>20177936</_NumeroDocumento>
+			<_NroOC/>
+			<_Lote>Lote Canje</_Lote>
+			<_FechaProcesamiento>12:38:07 06.12.2014</_FechaProcesamiento>
+			<_CodigoTienda/>
+		</_Sección_de_documento_1>
+	</_GuiaDeDespachoSodimac:_GuiaDeDespachoSodimac>
+</form:Documents>

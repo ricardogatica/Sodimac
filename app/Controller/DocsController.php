@@ -137,6 +137,24 @@
 			$this->set(compact('details', 'documents', 'types'));
 		}
 
+		/**
+		 * Método que permite la búsqueda de los documentos a través:
+		 *
+		 * - RUT
+		 * - Razón Social
+		 * - Fecha de procesamiento
+		 */
+		public function search($dte = true) {
+
+		}
+
+		/**
+		 * Método que permite asociar un documento con otro
+		 */
+		public function push($origin_id = 0, $dentiny_id = 0) {
+
+		}
+
 		public function pdf($id = null) {
 			$details = $this->Doc->find(
 				'first',
@@ -163,15 +181,6 @@
 				$this->redirect('/');
 			}
 
-			$documents = $this->Doc->find(
-				'all',
-				array(
-					'conditions' => array(
-						'Doc.match' => 1
-					)
-				)
-			);
-
 			$_pd4ml	= ROOT . DS . 'vendors' . DS . 'pd4ml' . DS . '3.9.3' . DS . 'pd4ml.jar';
 			$_file	= ROOT . DS . 'vendors' . DS . 'tifs' . DS . 'out' . DS . 'out.html';
 			
@@ -181,6 +190,15 @@
 			. '</head>'
 			. '<body>'
 			;
+
+			$documents = $this->Doc->find(
+				'all',
+				array(
+					'conditions' => array(
+						'Doc.match' => 1
+					)
+				)
+			);
 			
 			foreach ($documents AS $row) {
 				$images = array();
@@ -388,8 +406,8 @@
 			// [Tienda]/[Año]/[Mes]/[Día]/[Lote]/[Hora]/*.xml
 
 			$xmls = Hash::merge(
-				glob(WWW_ROOT . 'xml' . DS . 'dte' . DS . '*' . DS . '*' . DS . '*' . DS . '*' . DS . '*' . DS . '*' . DS . '*.xml'),
-				glob(WWW_ROOT . 'xml' . DS . 'docs' . DS . '*' . DS . '*' . DS . '*' . DS . '*' . DS . '*' . DS . '*' . DS . '*.xml')
+				glob(WWW_ROOT . 'xml' . DS . 'dte' . DS . '*' . DS . '*' . DS . '*' . DS . '*' . DS . '*' . DS . '*.xml'),
+				glob(WWW_ROOT . 'xml' . DS . 'docs' . DS . '*' . DS . '*' . DS . '*' . DS . '*' . DS . '*' . DS . '*.xml')
 			);
 
 			$imports = 0;
@@ -467,7 +485,7 @@
 						$doc['processed'] = date('Y-m-d H:i:s', strtotime($data['_FechaProcesamiento']));
 
 					if (!empty($doc['processed']) && !empty($doc['lote'])) {
-						$path = WWW_ROOT . 'img' . DS . ($dte ? 'dte' : 'docs') . DA . $data['_CodigoTienda'] . DS . date('Y' . DS . 'm' . DS . 'd', strtotime($doc['processed'])) . DS . $doc['lote'] . DS . date('His', strtotime($doc['processed']));
+						$path = WWW_ROOT . 'img' . DS . ($dte ? 'dte' : 'docs') . DS . $data['_CodigoTienda'] . DS . date('Y' . DS . 'm' . DS . 'd', strtotime($doc['processed'])) . DS . date('His', strtotime($doc['processed']));
 
 						if (is_dir($path)) {
 							$images = glob($path . DS . '{*.jpeg,*.jpg}', GLOB_BRACE);

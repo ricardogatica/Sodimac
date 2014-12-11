@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<form:Documents xmlns:form="http://www.abbyy.com/FlexiCapture/Schemas/Export/FormData.xsd" xmlns:addData="http://www.abbyy.com/FlexiCapture/Schemas/Export/AdditionalFormData.xsd">
+	<_DTE:_DTE xmlns:_DTE="http://www.abbyy.com/FlexiCapture/Schemas/Export/DTE.xsd">
+		<_Sección_de_documento_1>
+			<_TipoDocumento>FAC</_TipoDocumento>
+			<_NumeroFactura>062410822</_NumeroFactura>
+			<_CodigoTienda>087</_CodigoTienda>
+			<_NombreRazonSocial>SOC FERRETERA MORA FUENTE</_NombreRazonSocial>
+			<_RUTCliente>76091462-2</_RUTCliente>
+			<_NroOC>676</_NroOC>
+			<_NroGuiaDespacho>00000-000000000</_NroGuiaDespacho>
+			<_NroPVT>051023642/00000/S</_NroPVT>
+			<_CondicionPago>A187714907/10/2014</_CondicionPago>
+			<_Lote>Lote VtaStockBodegaAnticip</_Lote>
+			<_FechaProcesamiento>11:42:58 06.12.2014</_FechaProcesamiento>
+		</_Sección_de_documento_1>
+	</_DTE:_DTE>
+</form:Documents>
