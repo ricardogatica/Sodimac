@@ -22,12 +22,12 @@
 
 			<?php echo $this->Form->input('store_id', array('label' => __('Tienda'), 'options' => $stores_users)); ?>
 			<?php echo $this->Form->input('type_id', array('label' => __('Tipo Documento'), 'options' => $types)); ?>
-			<?php echo $this->Form->input('number', array('label' => __('Nº Documento'))); ?>
-			<?php echo $this->Form->input('company', array('label' => __('Razón Social'))); ?>
-			<?php echo $this->Form->input('document', array('label' => __('RUT'))); ?>
-			<?php echo $this->Form->input('noc', array('label' => __('Nro. OC Cliente'))); ?>
-			<?php echo $this->Form->input('ngd', array('label' => __('Nro. Guía de Despacho'))); ?>
-			<?php echo $this->Form->input('npvt', array('label' => __('Nº PVT'))); ?>
+			<?php echo $this->Form->input('number', array('type' => 'text', 'label' => __('Nº Documento'))); ?>
+			<?php echo $this->Form->input('company', array('type' => 'text', 'label' => __('Razón Social'))); ?>
+			<?php echo $this->Form->input('document', array('type' => 'text', 'label' => __('RUT'))); ?>
+			<?php echo $this->Form->input('noc', array('type' => 'text', 'label' => __('Nro. OC Cliente'))); ?>
+			<?php echo $this->Form->input('ngd', array('type' => 'text', 'label' => __('Nro. Guía de Despacho'))); ?>
+			<?php echo $this->Form->input('npvt', array('type' => 'text', 'label' => __('Nº PVT'))); ?>
 			<?php echo $this->Form->end(); ?>
 		</div>
 	</div>

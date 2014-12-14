@@ -104,7 +104,7 @@
 								$options[] = $this->Html->link(__('Editar'), array('controller' => 'docs', 'action' => 'edit', $row['Doc']['id']));
 
 								if ($row['Doc']['match']) {
-									$options[] = $this->Html->link(__('Imprimir'), array('controller' => 'docs', 'action' => 'pdf', $row['Doc']['id']));
+									$options[] = $this->Html->link(__('Imprimir'), array('controller' => 'docs', 'action' => 'print_pdf', $row['Doc']['id']), array('target' => '_blank'));
 									$options[] = $this->Html->link(__('Enviar'), array());
 								}
 

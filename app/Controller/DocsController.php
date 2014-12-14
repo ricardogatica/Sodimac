@@ -96,13 +96,18 @@
 		}
 
 		public function edit($id = null) {
+
+			$conditions = array(
+				'Doc.id' => $id
+			);
+
+			if (!Configure::read('debug'))
+				$conditions['Doc.store_id'] = array_keys($this->stores_users_active);
+
 			$details = $this->Doc->find(
 				'first',
 				array(
-					'conditions' => array(
-						'Doc.id' => $id,
-						'Doc.store_id' => array_keys($this->stores_users_active)
-					),
+					'conditions' => $conditions,
 					'contain' => array(
 						'Store',
 						'Type'
@@ -112,13 +117,17 @@
 
 			$this->request->data = $details;
 
+			$conditions = array(
+				'Doc.parent_id' => $id
+			);
+
+			if (!Configure::read('debug'))
+				$conditions['Doc.store_id'] = array_keys($this->stores_users_active);
+
 			$documents = $this->Doc->find(
 				'all',
 				array(
-					'conditions' => array(
-						'Doc.parent_id' => $id,
-						'Doc.store_id' => array_keys($this->stores_users_active)
-					)
+					'conditions' => $conditions
 				)
 			);
 
@@ -136,6 +145,13 @@
 
 			$this->set(compact('details', 'documents', 'types'));
 		}
+
+		public function print_pdf($id = 0) {
+			$this->autoRender = false;
+			$path = $this->pdf($id);
+			$this->response->file($path, array('download' => false, 'name' => basename($path)));
+		}
+
 
 		/**
 		 * Método que permite la búsqueda de los documentos a través:
@@ -181,8 +197,29 @@
 				$this->redirect('/');
 			}
 
-			$_pd4ml	= ROOT . DS . 'vendors' . DS . 'pd4ml' . DS . '3.9.3' . DS . 'pd4ml.jar';
-			$_file	= ROOT . DS . 'vendors' . DS . 'tifs' . DS . 'out' . DS . 'out.html';
+			$images = array();
+
+			foreach ($details['Doc']['images'] AS $image) {
+				$images[] = $image;
+			}
+
+			$documents = $this->Doc->find(
+				'all',
+				array(
+					'conditions' => array(
+						'Doc.parent_id' => $details['Doc']['id'],
+						'Doc.match' => 1
+					)
+				)
+			);
+
+			foreach ($documents AS $row) {
+				if (!empty($row['Doc']['images'])) {
+					foreach ($row['Doc']['images'] AS $image) {
+						$images[] = $image;
+					}
+				}
+			}
 			
 			$pdf = '<html>'
 			. '<head>'
@@ -191,191 +228,78 @@
 			. '<body>'
 			;
 
-			$documents = $this->Doc->find(
-				'all',
-				array(
-					'conditions' => array(
-						'Doc.match' => 1
-					)
-				)
-			);
-			
-			foreach ($documents AS $row) {
-				$images = array();
-				if (!empty($row['Doc']['images'])) {
+			foreach ($images AS $image) {
+				if (!file_exists($image['path']))
+					continue;
 
-					foreach ($row['Doc']['images'] AS $image) {
+				list($width, $height, $type, $attr) = getimagesize($image['path']);
 
-						if (!file_exists(WWW_ROOT . $image['path']))
-							continue;
-
-						list($width, $height, $type, $attr) = getimagesize($image['normal']);
-
-						$min_width = 700;
-						$min_height = 900;
-						
-						$ratio = $width / $min_width;
-						if ($height > $min_height)
-							$ratio = $height / $min_height;
-						
-						$ratio = max($ratio, 1.0);
-
-						$pdf.= '<img src="" style="width:'.$img_width.'px;">'
-						. '<pd4ml:page.break>'
-						;
-					}	
-				}
-
-				debug($pdf);
-				die;
+				$min_width = 700;
+				$min_height = 1100;
 				
+				$ratio = $width / $min_width;
+				if ($height > $min_height)
+					$ratio = $height / $min_height;
 
+				$ratio = max($ratio, 1.0);
 
-				/*
-				foreach (array_keys($value) AS $number) {
-					$query = 'SELECT * FROM documents_pdfs WHERE document = \'' . $document . '\' AND number = \'' . $number . '\' AND type IN (\'FAC\',\'GD\',\'OC\',\'RES\')';
-					$documents_ = $this->MySQL->ExecuteSQL($query);
-					
-					$fac_num = $nc_num = $fac = $gd = $oc = $nc = $res = '';
-					$i = 0;
-					
-					if (!empty($documents_) && is_array($documents_)) {
-						$documents_ = count($documents_) == 1 ? array($documents_) : $documents_;
+				$img_width = (int)($width / $ratio);
+				$img_height = (int)($height / $ratio);
 
-						foreach ($documents_ AS $row) {
-							$img = ROOT . DS . 'vendors' . DS . 'tifs' . DS . 'out' . DS . $row['file'];
-							list($width, $height, $type, $attr) = getimagesize($img);
-							
-							$min_width = 700;
-							$min_height = 900;
-							
-							$ratio = $width / $min_width;
-							if ($height > $min_height)
-								$ratio = $height / $min_height;
-							
-							$ratio = max($ratio, 1.0);
-							
-							$img_width = (int)($width / $ratio);
-							$img_height = (int)($height / $ratio);
-							
-							if (!empty($row['type']) && $row['type'] == 'FAC') {
-								if ($fac_num != $row['fact'])
-									$fac_num = $row['fact'];
-								 
-								$fac.= '<img src="' . $this->config['full_base_url'] . '/vendors/tifs/out/' . $row['file'] . '" style="width:'.$img_width.'px;">'
-								. '<pd4ml:page.break>'
-								;
-							}
-							
-							if (!empty($row['type']) && $row['type'] == 'GD') { 
-								$gd.= '<img src="' . $this->config['full_base_url'] . '/vendors/tifs/out/' . $row['file'] . '" style="width:'.$img_width.'px;">'
-								. '<pd4ml:page.break>'
-								;
-							}
-							
-							if (!empty($row['type']) && $row['type'] == 'OC') { 
-								$oc.= '<img src="' . $this->config['full_base_url'] . '/vendors/tifs/out/' . $row['file'] . '" style="width:'.$img_width.'px;">'
-								. '<pd4ml:page.break>'
-								;
-							}
-			
-							if (!empty($row['type']) && $row['type'] == 'RES') { 
-								$res.= '<img src="' . $this->config['full_base_url'] . '/vendors/tifs/out/' . $row['file'] . '" style="width:'.$img_width.'px;">'
-								. '<pd4ml:page.break>'
-								;
-							}
-			
-							$i++;
-						}
-						
-						if ($fac_num AND ($fac OR $gd OR $oc)) {
-							$_down	= ROOT . DS . $this->folderPdf . DS . $fac_num . '.pdf';
-							
-							file_put_contents($_file, $pdf_begin.$fac.$gd.$oc.$res.$pdf_end);
-							system("java -jar {$_pd4ml} file:{$_file} {$_down}");
-							
-							$filename = explode('.', basename($_down));
-							
-							rename($_down, dirname($_down) . DS . '(' . $filename['0'] . ').'.$filename['1']);
-							sleep(1);
-							
-							//@unlink($_file);
-						}
+				if ($img_width < $min_width) {
+					//$height = 1956;
+					if ($height < 1600) {
+						$ratio = $height / $min_height;
+					}
+					else if ($height < 2000) { // Revisar esto por que no puede ser la imagen más ancha
+						$ratio = $height / ($min_height);
 					}
 
-					$query = 'SELECT * FROM documents_pdfs WHERE document = \'' . $document . '\' AND number = \'' . $number . '\' AND type = \'NC\'';
-					$documents_nc = $this->MySQL->ExecuteSQL($query);
+					$img_width = $width / $ratio;
 
-					if (!empty($documents_nc) && is_array($documents_nc)) {
-						$documents_nc = count($documents_nc) == 1 ? array($documents_nc) : $documents_nc;
-						
-						foreach ($documents_nc AS $row) {
-							if (!empty($row['type']) && $row['type'] == 'NC') {
-								$img = ROOT . DS . 'vendors' . DS . 'tifs' . DS . 'out' . DS . $row['file'];
-								list($width, $height, $type, $attr) = getimagesize($img);
-								
-								$min_width = 700;
-								$min_height = 900;
-								
-								$ratio = $width / $min_width;
-								if ($height > $min_height)
-									$ratio = $height / $min_height;
-								
-								$ratio = max($ratio, 1.0);
-								
-								$img_width = (int)($width / $ratio);
-								$img_height = (int)($height / $ratio);
+					$pages = (($height / $ratio) / $min_height);
 
-								if ($nc_num != $row['document'])
-									$nc_num = $row['document'];
-								
-								$nc.= '<img src="' . $this->config['full_base_url'] . '/vendors/tifs/out/' . $row['file'] . '" style="width:'.$img_width.'px;">'
-								. '<pd4ml:page.break>'
-								;
-							}
-						}
-						if ($nc) {
-							$_down	= ROOT . DS . $this->folderPdfNC . DS . $nc_num . '.pdf';
-							
-							file_put_contents($_file, $pdf_begin.$nc.$pdf_end);
-							system("java -jar {$_pd4ml} file:{$_file} {$_down}");
-							
-							$filename = explode('.', basename($_down));
-							
-							rename($_down, dirname($_down) . DS . '(' . $filename['0'] . ').'.$filename['1']);
-							sleep(1);
-							
-							//@unlink($_file);
-						}
-					}
+					$pages = round($pages);
 				}
-				*/
+				else if ($img_width > $min_width) {
+					$ratio = $img_width / $min_width;
+					$img_width = $img_width / $ratio;
+				}
+
+				$pdf.= '<center><img src="' . Router::url($image['normal'], true) . '" style="width:' . $img_width . 'px;"></center>'
+				. '<div style="clear:both;"></div>'
+				. '<pd4ml:page.break>'
+				;
 			}
 
 			$pdf.= '</body>'
 			. '</html>'
 			;
 
-			debug($pdf);
-			die;
+			$this->folderPdf = 'vendors' . DS . 'processed' . DS . date('Y', strtotime($details['Doc']['processed'])) . DS . date('m', strtotime($details['Doc']['processed'])) . DS . date('d', strtotime($details['Doc']['processed']));
+			$path = $dir = '';
+			foreach (explode(DS, $this->folderPdf) AS $folder) {
+				$path.= DS . $folder;
+				if (!in_array($folder, array('vendors', 'processed')) && !file_exists(ROOT . $path) && !is_dir(ROOT . $path)) {
+					debug(ROOT . $path);
+					mkdir(ROOT . $path);
+					chmod(ROOT . $path, 0777);
+				}
+			}
+
+			$_pd4ml	= ROOT . DS . 'vendors' . DS . 'pd4ml' . DS . '3.9.3' . DS . 'pd4ml.jar';
+			$_file	= ROOT . DS . APP_DIR . DS . 'tmp' . DS . 'out.html';
+			$_down	= ROOT . DS . $this->folderPdf . DS . $details['Doc']['number'] . '.pdf';
 			
-			$_down	= ROOT . DS . $this->folderPdf . DS . $fac_num . '.pdf';
-			
-			/*
-			file_put_contents($_file, $pdf_begin.$fac.$gd.$oc.$res.$pdf_end);
+			file_put_contents($_file, $pdf);
 			system("java -jar {$_pd4ml} file:{$_file} {$_down}");
 			
 			$filename = explode('.', basename($_down));
 			
-			rename($_down, dirname($_down) . DS . '(' . $filename['0'] . ').'.$filename['1']);
+			rename($_down, $_down = dirname($_down) . DS . '(' . $filename['0'] . ').'.$filename['1']);
 			sleep(1);
-			*/
-			
 
-			
-			$this->set(compact('details', 'cedibles'));
-
-			return;
+			return $_down;
 		}
 
 		public function import() {
@@ -402,8 +326,6 @@
 			);
 
 			\App::uses('Xml', 'Utility');
-
-			// [Tienda]/[Año]/[Mes]/[Día]/[Lote]/[Hora]/*.xml
 
 			$xmls = Hash::merge(
 				glob(WWW_ROOT . 'xml' . DS . 'dte' . DS . '*' . DS . '*' . DS . '*' . DS . '*' . DS . '*' . DS . '*.xml'),
@@ -488,7 +410,9 @@
 						$path = WWW_ROOT . 'img' . DS . ($dte ? 'dte' : 'docs') . DS . $data['_CodigoTienda'] . DS . date('Y' . DS . 'm' . DS . 'd', strtotime($doc['processed'])) . DS . date('His', strtotime($doc['processed']));
 
 						if (is_dir($path)) {
-							$images = glob($path . DS . '{*.jpeg,*.jpg}', GLOB_BRACE);
+							$file_name = str_replace('.xml', '', basename($xml_file));
+							$path = $path . DS . '{' . $file_name . '*.jpg}';
+							$images = glob($path, GLOB_BRACE);
 
 							if ($images)
 								$doc['images'] = serialize($images);
