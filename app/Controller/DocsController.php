@@ -460,7 +460,7 @@
 					);
 
 					if (!empty($data['_CodigoTienda']))
-						$doc['store_id'] = (int) array_search((int)$data['_CodigoTienda'], $stores);
+						$doc['store_id'] = (int)array_search((int)$data['_CodigoTienda'], $stores);
 
 					if (!empty($data['_TipoDocumento']))
 						$doc['type_id'] = array_search($data['_TipoDocumento'], $types);
@@ -474,8 +474,11 @@
 					if (!empty($data['_RUTCliente']))
 						$doc['document'] = $data['_RUTCliente'];
 
-					if (!empty($data['_NroOC']))
+					if (!empty($data['_NroOC'])) {
 						$doc['noc'] = $data['_NroOC'];
+						
+						$doc['noc_0'] = (int)$data['_NroOC'];
+					}
 
 					if (!empty($data['_NroGuiaDespacho'])) {
 						$doc['ngd'] = $data['_NroGuiaDespacho'];
@@ -568,12 +571,7 @@
 			$this->redirect(array('controller' => 'docs', 'action' => 'index', $type));
 		}
 
-		/**
-		 * Método que realiza match de los DTE con los documentos cedibles.
-		 */
-		public function match($cron = true, $conditions = array()) {
-			$this->autoRender = false;
-
+		public function potential($conditions = array()) {
 			// Traigo todo los dte que no tienen documentos asociados
 			$this->Doc->virtualFields['cedibles'] = '(SELECT COUNT(id) FROM docs WHERE parent_id = Doc.id AND dte = 0)';
 
@@ -617,6 +615,16 @@
 			);
 
 			unset($this->Doc->virtualFields['cedibles']);
+		}
+
+		/**
+		 * Método que realiza match de los DTE con los documentos cedibles.
+		 */
+		public function match($cron = true, $conditions = array()) {
+			$this->autoRender = false;
+
+
+			$docs = $this->potential($conditions);
 
 			$matched = 0;
 			foreach ($docs AS $row) {

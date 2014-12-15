@@ -56,7 +56,7 @@
 
 				$this->loadModel('StoreUser');
 
-				$this->StoreUser->virtualFields['name'] = 'CONCAT(\'Cod \',Store.cod, \' (\', Store.name,\')\')';
+				$this->StoreUser->virtualFields['name'] = 'CONCAT(Store.cod, \' (\', Store.name,\')\')';
 
 				$this->stores_users_active = $this->stores_users = $stores_users = $this->StoreUser->find(
 					'list',

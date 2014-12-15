@@ -17,6 +17,21 @@
 		echo $this->fetch('css');
 		echo $this->fetch('script');
 	?>
+
+	<?php echo $this->Html->css(array('/js/fancybox/jquery.fancybox.css')); ?>
+	<?php echo $this->Html->script(array('jquery.elevateZoom-3.0.8.min.js', 'fancybox/jquery.fancybox.pack.js')); ?>
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$('#previewDocument').on('load', function(){
+				$(this).elevateZoom({
+					zoomType: 'inner',
+					cursor: 'crosshair'
+				});
+			});
+
+			$('.fancybox').fancybox();
+		});
+	</script>
 </head>
 <body>
 

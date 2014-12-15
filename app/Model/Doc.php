@@ -23,9 +23,17 @@
 		
 		public function __construct($id = false, $table = null, $ds = null) {
 			parent::__construct($id, $table, $ds);
-			
+		}
+
+		public function find($type = 'first', array $params = array()) {
+			$this->contain('Store');
+
 			$this->virtualFields['mismatched'] = 'IF(DATE(DATE_ADD(Doc.processed, INTERVAL Store.mismatch_days DAY)) < \'' . date('Y-m-d') . '\', 1, 0)';
 			$this->virtualFields['danger'] = 'IF(Doc.matched, 0, IF(DATE(DATE_ADD(Doc.processed, INTERVAL (Store.mismatch_days + Store.warning_days) DAY)) < \'' . date('Y-m-d') . '\', 1, 0))';
+
+			$result = parent::find($type, $params);
+
+			return $result;
 		}
 
 		public function afterFind(array $results, $primary = false) {

@@ -1,4 +1,10 @@
-<h1 class="page-header"><?php echo __('Edición de %s Nº: %s', $details['Type']['name'], $details['Doc']['number'] ? $details['Doc']['number'] : '--'); ?></h1>
+<h1 class="page-header">
+<?php if ($details['Doc']['dte'] && $details['Doc']['matched']): ?>
+	<?php echo $this->Html->link(__('Ir a exportar'), array('controller' => 'docs', 'action' => 'export', $details['Doc']['id']), array('class' => 'btn btn-primary pull-right')); ?>
+<?php endif; ?>
+
+	<?php echo __('Edición de %s Nº: %s', $details['Type']['name'], $details['Doc']['number'] ? $details['Doc']['number'] : '--'); ?>
+</h1>
 
 <div class="row">
 	<div class="col-xs-6 col-md-8 col-lg-7">
@@ -35,15 +41,14 @@
 	</div>
 </div>
 
+<?php if ($details['Doc']['dte']): ?>
 <h2 class="page-header"><?php echo __('Cedibles conciliados'); ?></h2>
 
-<?php if ($details['Doc']['dte']): ?>
-
 <div class="row">
-	<div class="col-lg-7">
+	<div class="col-xs-9 col-lg-7">
 		<?php echo __('* Solo se muestra la primera imagen de los cedibles asociados.'); ?>
 	</div>
-	<div class="col-lg-5">
+	<div class="col-xs-3 col-lg-5">
 		<?php echo $this->Html->link(__('+ Agregar documento'), array('iframe' => true, 'controller' => 'docs', 'action' => 'search'), array('class' => 'btn btn-block btn-success fancybox fancybox.iframe')); ?>
 	</div>
 </div>
@@ -51,7 +56,7 @@
 <div class="row">
 <?php if (!empty($documents)): ?>
 	<?php foreach ($documents AS $row): ?>
-	<div class="col-lg-2">
+	<div class="col-xs-4 col-lg-2">
 		<div class="thumbnail">
 			<div class="caption">
 				<h5>
@@ -75,19 +80,3 @@
 </div>
 
 <?php endif; ?>
-
-
-<?php $this->Html->css(array('/js/fancybox/jquery.fancybox.css'), array('inline' => false)); ?>
-<?php $this->Html->script(array('jquery.elevateZoom-3.0.8.min.js', 'fancybox/jquery.fancybox.pack.js'), array('inline' => false)); ?>
-<script type="text/javascript">
-	$(document).ready(function(){
-		$('#previewDocument').on('load', function(){
-			$(this).elevateZoom({
-				zoomType: 'inner',
-				cursor: 'crosshair'
-			});	
-
-			 $('.fancybox').fancybox();
-		})
-	});
-</script>

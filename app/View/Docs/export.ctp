@@ -13,7 +13,7 @@
 
 		<h3 class="page-header"><?php echo __('Vista del PDF'); ?></h3>
 
-		<iframe src="<?php echo Router::url(array('controller' => 'docs', 'action' => 'pdf_view', $details['Doc']['id'])); ?>" width="100%" height="600"></iframe>
+		<!--<iframe src="<?php echo Router::url(array('controller' => 'docs', 'action' => 'pdf_view', $details['Doc']['id'])); ?>" width="100%" height="600"></iframe>-->
 
 	</div>
 
@@ -70,7 +70,7 @@
 			<tr>
 				<td>#<?php echo $row['Doc']['id']; ?></td>
 				<td><?php echo __('%s Nro.', $row['Type']['name']); ?></td>
-				<td><?php echo $this->Html->link($row['Doc']['number'], $row['Doc']); ?></td>
+				<td><?php echo $this->Html->link($row['Doc']['number'], array('iframe' => true, 'controller' => 'docs', 'action' => 'edit', $row['Doc']['id']), array('class' => 'fancybox fancybox.iframe')); ?></td>
 			</tr>
 		<?php endforeach; ?>
 		</table>
