@@ -43,6 +43,13 @@
 		<div class="col-lg-12">
 
 			<table class="table">
+				<tfoot>
+					<tr>
+						<td colspan="12">
+							<?php echo $this->Paginator->pagination(array('ul' => 'pagination')); ?>
+						</td>
+					</td>
+				</tfoot>
 				<thead>
 					<tr>
 						<th></th>

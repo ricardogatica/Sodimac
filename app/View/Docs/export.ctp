@@ -68,6 +68,9 @@
 				<td>#<?php echo $row['Doc']['id']; ?></td>
 				<td><?php echo __('%s Nro.', $row['Type']['name']); ?></td>
 				<td><?php echo $this->Html->link($row['Doc']['number'], array('iframe' => true, 'controller' => 'docs', 'action' => 'edit', $row['Doc']['id']), array('class' => 'fancybox fancybox.iframe')); ?></td>
+				<td>
+					<?php echo $this->Html->link('<i class="glyphicon glyphicon-trash"></i>', array('controller' => 'docs', 'action' => 'delete', $row['Doc']['id']), array('escape' => false), __('¿Deseas eliminar este documento?')); ?>
+				</td>
 			</tr>
 		<?php endforeach; ?>
 		</table>

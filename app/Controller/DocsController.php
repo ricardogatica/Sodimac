@@ -5,10 +5,7 @@
 	App::uses('AppController', 'Controller');
 
 	class DocsController extends AppController {
-
-		public function admin_types() {
-
-		}
+		public $components = array('Paginator');
 
 		public function index($type = 'matched') {
 			$conditions = array();
@@ -44,9 +41,9 @@
 				};
 			}
 
-			
 			if (!Configure::read('debug'))
 				$conditions['Doc.store_id'] = array_keys($this->stores_users_active);
+
 			$conditions['Doc.exported'] = 0;
 
 			if ($type == 'matched') {
@@ -54,49 +51,48 @@
 				$conditions['Doc.matched'] = 1;
 			}
 			else {
-				$conditions['Doc.matched'] = 0;
 				$conditions['Doc.dte'] = array(1, 0);
+				$conditions['Doc.matched'] = 0;
 				$conditions['Doc.mismatched'] = 1; // Se muestran documentos que no han sido match
 			}
 
 			$this->set(compact('type'));
 
-			$docs = $this->Doc->find(
-				'threaded',
-				array(
-					'conditions' => $conditions,
-					'fields' => array(
-						'id',
-						'parent_id',
-						'store_id',
-						'type_id',
-						'processed',
-						'matched',
-						'printable',
-						'sendable',
-						'dte',
-						'number',
-						'company',
-						'document',
-						'payment',
-						'noc',
-						'ngd',
-						'ngd_0',
-						'ngd_1',
-						'npvt',
-						'npvt_0',
-						'npvt_1',
-						'npvt_2',
+			$this->paginate = array(
+				'conditions' => $conditions,
+				'fields' => array(
+					'id',
+					'parent_id',
+					'store_id',
+					'type_id',
+					'processed',
+					'matched',
+					'printable',
+					'sendable',
+					'dte',
+					'number',
+					'company',
+					'document',
+					'payment',
+					'noc',
+					'ngd',
+					'ngd_0',
+					'ngd_1',
+					'npvt',
+					'npvt_0',
+					'npvt_1',
+					'npvt_2',
 
-						'danger'
-					),
-					'contain' => array(
-						'Type.alias',
-						'Store.cod'
-					),
-					'order' => 'Doc.id ASC'
-				)
+					'danger'
+				),
+				'contain' => array(
+					'Type.alias',
+					'Store.cod'
+				),
+				'order' => 'Doc.id ASC'
 			);
+
+			$docs = $this->Paginator->paginate('Doc');
 
 			$this->set(compact('docs'));
 		}
@@ -223,9 +219,8 @@
 
 			$this->Doc->delete($id);
 			$this->Doc->deleteAll(array('parent_id' => $id));
-			$this->Session->setFlash(__('Se ha eliminado el documento.'));
+			$this->Session->setFlash(__('Se ha eliminado el documento.'), 'alert', array('plugin' => 'BoostCake', 'class' => 'alert-success'));
 			$this->redirect($this->referer());
-
 		}
 
 		/**
