@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.1.44)
 # Database: freelance_sodimac
-# Generation Time: 2014-12-15 00:21:34 +0000
+# Generation Time: 2014-12-15 18:39:33 +0000
 # ************************************************************
 
 
@@ -90,6 +90,7 @@ CREATE TABLE `docs` (
   `document` varchar(20) NOT NULL DEFAULT '',
   `payment` varchar(100) NOT NULL DEFAULT '',
   `noc` varchar(100) NOT NULL DEFAULT '',
+  `noc_0` varchar(100) NOT NULL DEFAULT '',
   `ngd` varchar(100) NOT NULL DEFAULT '',
   `ngd_0` varchar(100) NOT NULL DEFAULT '',
   `ngd_1` varchar(100) NOT NULL DEFAULT '',

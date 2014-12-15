@@ -59,19 +59,21 @@
 <div class="row">
 <?php if (!empty($documents)): ?>
 	<?php foreach ($documents AS $row): ?>
+	<?php foreach ($row['Doc']['images'] AS $image): ?>
 	<div class="col-xs-4 col-lg-2">
 		<div class="thumbnail">
 			<div class="caption">
 				<h5>
-					<?php echo $row['Type']['name']; ?>
-					<small><?php echo $row['Doc']['number']; ?></small>
+					<?php echo $row['Type']['name']; ?><br />
+					<small><?php echo __('Nro %s', $row['Doc']['number']); ?></small>
 				</h5>
 			</div>
 			<div style="overflow:hidden;height:200px;">
-			<?php echo $this->Html->link($this->Html->image($row['Doc']['preview_normal'], array('class' => 'img-responsive')), array('iframe' => true, 'controller' => 'docs', 'action' => 'edit', $row['Doc']['id']), array('escape' => false, 'class' => 'fancybox fancybox.iframe')); ?>
+			<?php echo $this->Html->link($this->Html->image($image['normal'], array('class' => 'img-responsive')), array('iframe' => true, 'controller' => 'docs', 'action' => 'edit', $row['Doc']['id']), array('escape' => false, 'class' => 'fancybox fancybox.iframe')); ?>
 			</div>
 		</div>
 	</div>
+	<?php endforeach; ?>
 	<?php endforeach; ?>
 <?php else: ?>
 	<div class="col-lg-12">

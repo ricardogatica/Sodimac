@@ -271,7 +271,7 @@
 				$this->Session->setFlash(__('El DTE no tiene imagen.'));
 				$this->redirect('/');
 			}
-			
+	
 			$pdf = '<html>'
 			. '<head>'
 			. '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">'
@@ -352,36 +352,24 @@
 			return $_down;
 		}
 
+		public function pdf_print($id) {
+			$this->layout = 'print';
+
+			$this->details($id, true, true);
+
+			$this->set('url', Router::url(array('controller' => 'docs', 'action' => 'pdf_view', $id)));
+		}
+
 		public function pdf_view($id = null) {
 			$this->autoRender = false;
 
-			$conditions = array(
-				'Doc.id' => $id
-			);
+			$data = $this->details($id, true, true);
 
-			if (!Configure::read('debug'))
-				$conditions['Doc.store_id'] = array_keys($this->stores_users_active);
-
-			$details = $this->Doc->find(
-				'first',
-				array(
-					'conditions' => $conditions,
-					'contain' => array(
-						'Store',
-						'Type'
-					)
-				)
-			);
-
-			if (empty($details)) {
-				$this->Session->setFlash(__('No se puede imprimir el documento.'));
-			}
-
-			if ($details['Doc']['file_pdf']) {
-				$path = $details['Doc']['file_pdf'];
+			if ($data['details']['Doc']['file_pdf']) {
+				$path = $data['details']['Doc']['file_pdf'];
 			}
 			else {
-				$path = $this->pdf($details['Doc']['id']);
+				$path = $this->pdf($data['details']['Doc']['id']);
 			}
 			
 			$this->response->file($path, array('download' => false, 'name' => basename($path)));
@@ -502,7 +490,17 @@
 						$doc['processed'] = date('Y-m-d H:i:s', strtotime($data['_FechaProcesamiento']));
 
 					if (!empty($doc['processed']) && !empty($doc['lote'])) {
-						$path = WWW_ROOT . 'img' . DS . ($dte ? 'dte' : 'docs') . DS . $data['_CodigoTienda'] . DS . date('Y' . DS . 'm' . DS . 'd', strtotime($doc['processed'])) . DS . date('His', strtotime($doc['processed']));
+						$path = array(
+							'img',
+							($dte ? 'dte' : 'docs'),
+							$data['_CodigoTienda'],
+							date('Y', strtotime($doc['processed'])),
+							date('m', strtotime($doc['processed'])),
+							date('d', strtotime($doc['processed'])),
+							date('His', strtotime($doc['processed']))
+						);
+
+						$path = WWW_ROOT . implode(DS, $path);
 
 						if (is_dir($path)) {
 							$file_name = str_replace('.xml', '', basename($xml_file));

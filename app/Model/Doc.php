@@ -43,7 +43,8 @@
 				$images = array();
 				if (!empty($val[$this->alias]['images'])) {
 					foreach (unserialize($val[$this->alias]['images']) AS $i => $image) {
-						$image_ = explode(DS, preg_replace('/(.+)\/app\/webroot/', '', $image));
+						$image = str_replace('\\', '/', $image);
+						$image_ = explode('/', preg_replace('/(.*)\/app\/webroot/', '', $image));
 						$image_normal = implode('/', $image_);
 						$image_zoom = str_replace('.jpg', '_zoom.jpg', implode('/', $image_));
 
@@ -66,6 +67,9 @@
 				}
 
 				$results[$key][$this->alias]['images'] = $images;
+
+				if (!empty($results[$key][$this->alias]['serialize']))
+					$results[$key][$this->alias]['original'] = unserialize($results[$key][$this->alias]['serialize']);
 			}
 
 			return $results;
