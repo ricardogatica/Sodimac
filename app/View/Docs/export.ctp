@@ -10,15 +10,12 @@
 
 <div class="row">
 	<div class="col-lg-7">
-
 		<h3 class="page-header"><?php echo __('Vista del PDF'); ?></h3>
 
-		<!--<iframe src="<?php echo Router::url(array('controller' => 'docs', 'action' => 'pdf_view', $details['Doc']['id'])); ?>" width="100%" height="600"></iframe>-->
-
+		<iframe src="<?php echo Router::url(array('controller' => 'docs', 'action' => 'pdf_view', $details['Doc']['id'])); ?>" width="100%" height="600"></iframe>
 	</div>
 
 	<div class="col-lg-5">
-
 		<h3 class="page-header">
 			<?php echo $this->Html->link(__('Exportar'), array('controller' => 'docs', 'action' => 'edit', $details['Doc']['id']), array('class' => 'btn btn-primary pull-right'), __('¿Esta realmente seguro de exportar el documento? Esta acción no se podrá deshacer.')); ?>
 			<?php echo $this->Html->link(__('Editar'), array('controller' => 'docs', 'action' => 'edit', $details['Doc']['id']), array('class' => 'btn btn-link pull-right')); ?>
@@ -75,6 +72,5 @@
 		<?php endforeach; ?>
 		</table>
 	<?php endif; ?>
-
 	</div>
 </div>

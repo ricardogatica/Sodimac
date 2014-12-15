@@ -64,17 +64,17 @@
 				<tbody>
 				<?php if ($type == 'dte' && empty($docs)): ?>
 					<tr>
-						<td colspan="11">
-							<div class="alert alert-info text-center">
+						<td colspan="12">
+							<div class="alert alert-warning text-center">
 								<?php echo __('No hay documentos por conciliar.'); ?>
 							</div>
 						</td>
 					</tr>
 				<?php elseif (empty($docs)): ?>
 					<tr>
-						<td colspan="11">
-							<div class="alert alert-danger text-center">
-								<?php echo __('No hay documentos conciliados.'); ?>
+						<td colspan="12">
+							<div class="alert alert-info text-center">
+								<?php echo __('No tienes documentos conciliados para exportar :)'); ?>
 							</div>
 						</td>
 					</tr>
@@ -87,7 +87,7 @@
 						<td class="text-center"><?php echo $this->Time->format('d/m/Y', $row['Doc']['processed']); ?></td>
 
 						<td class="text-center"><?php echo $row['Type']['alias']; ?></td>
-						<td class="text-center"><?php echo $this->Html->link($row['Doc']['number'], array('iframe' => true, 'controller' => 'docs', 'action' => 'edit', $row['Doc']['id'])); ?></td>
+						<td class="text-center"><?php echo $this->Html->link($row['Doc']['number'], array('controller' => 'docs', 'action' => 'edit', $row['Doc']['id'])); ?></td>
 
 						<td><?php echo $row['Doc']['company'] ? $row['Doc']['company'] : '--'; ?></td>
 						<td><?php echo $row['Doc']['document'] ? $row['Doc']['document'] : '--'; ?></td>

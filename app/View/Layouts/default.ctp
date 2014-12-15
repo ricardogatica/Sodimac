@@ -35,8 +35,6 @@
 </head>
 <body>
 
-<?php echo $this->Session->flash(); ?>
-
 <div class="container">
 <?php if (AuthComponent::user('id')): ?>
 	<div class="row">
@@ -124,6 +122,7 @@
 
 	<div class="row">
 		<div class="col-lg-12">
+			<?php echo $this->Session->flash(); ?>
 			<?php echo $this->fetch('content'); ?>
 		</div>
 	</div>

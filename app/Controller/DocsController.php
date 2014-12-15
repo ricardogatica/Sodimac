@@ -476,7 +476,7 @@
 
 					if (!empty($data['_NroOC'])) {
 						$doc['noc'] = $data['_NroOC'];
-						
+
 						$doc['noc_0'] = (int)$data['_NroOC'];
 					}
 
@@ -563,15 +563,21 @@
 
 		public function manual() {
 			$type = 'dte';
+			$this->Session->setFlash(__('No se han conciliado documentos'), 'alert', array('plugin' => 'BoostCake', 'class' => 'alert-warning'));
+
 			if ($matched = $this->match(false)) {
-				$this->Session->setFlash(__('Se han conciliado %n DTE', $matched));
+				$this->Session->setFlash(__('Se han conciliado %n DTE', $matched), 'alert', array('plugin' => 'BoostCake', 'class' => 'alert-success'));
 				$type = 'matched';
 			}
 
 			$this->redirect(array('controller' => 'docs', 'action' => 'index', $type));
 		}
 
-		public function potential($conditions = array()) {
+		public function potential_matches_dte($id = null) {
+			return $this->potential_matches(array('Doc.id' => $id));
+		}
+
+		public function potential_matches($conditions = array()) {
 			// Traigo todo los dte que no tienen documentos asociados
 			$this->Doc->virtualFields['cedibles'] = '(SELECT COUNT(id) FROM docs WHERE parent_id = Doc.id AND dte = 0)';
 
@@ -583,10 +589,7 @@
 
 			$conditions = Hash::merge($conditions_default, $conditions);
 
-			if (!$cron && empty($this->stores_users_active))
-				return __('No se puede realizar match manual');
-
-			if (!Configure::read('debug'))
+			if (!Configure::read('debug') && !empty($this->stores_users_active))
 				$conditions['Doc.store_id'] = array_keys($this->stores_users_active);
 
 			$docs = $this->Doc->find(
@@ -615,18 +618,8 @@
 			);
 
 			unset($this->Doc->virtualFields['cedibles']);
-		}
 
-		/**
-		 * Método que realiza match de los DTE con los documentos cedibles.
-		 */
-		public function match($cron = true, $conditions = array()) {
-			$this->autoRender = false;
-
-
-			$docs = $this->potential($conditions);
-
-			$matched = 0;
+			$matches = array();
 			foreach ($docs AS $row) {
 				// Se realizan las condiciones para buscar los cedibles.
 				$conditions = array();
@@ -679,7 +672,6 @@
 						$conditions['type_id'] = $row['Doc']['type_id'];
 						$conditions['number'] = $row['Doc']['number'];
 					}
-
 				}
 
 				if (empty($conditions))
@@ -689,7 +681,7 @@
 					$conditions['matched'] = 0; // No debe estar unido a ningún DTE (Cover)
 					$conditions['dte'] = 0; // No debe ser DTE (Cover)
 
-					$cedibles = $this->Doc->find(
+					$documents = $this->Doc->find(
 						'all',
 						array(
 							'conditions' => $conditions,
@@ -710,32 +702,58 @@
 						)
 					);
 
-					if (empty($cedibles))
+					if (empty($documents))
 						continue;
 
-					foreach ($cedibles AS $cedible) {
-						$this->Doc->id = $cedible['Doc']['id'];
+					$matches[$row['Doc']['id']]['details']['id'] = $row['Doc']['id'];
 
-						$cedible_data = array(
-							'parent_id' => $row['Doc']['id'],
-							'matched' => 1
+					foreach ($documents AS $document) {
+						$matches[$row['Doc']['id']]['matches'][] = array(
+							'id' => $document['Doc']['id']
 						);
-
-						$this->Doc->save($cedible_data);
 					}
-
-					// Se actualiza el DTE como matcheado con sus cedibles
-					$this->Doc->id = $row['Doc']['id'];
-					$this->Doc->saveField('matched', 1);
-
-					// Se genera pdf automáticamente.
-					if (!Configure::read('debug'))
-						$this->Doc->saveField('file_pdf', $this->pdf($row['Doc']['id']));
-
-					$matched++;
 				}				
 			}
 
-			return $matched;
+			return $matches;
 		}
+
+		/**
+		 * Método que realiza match de los DTE con los documentos cedibles.
+		 */
+		public function match($cron = true, $conditions = array()) {
+			$this->autoRender = false;
+
+			if (!$cron && empty($this->stores_users_active))
+				return __('No se puede realizar match manual');
+
+			//potential_matches_dte
+			$docs = $this->potential_matches($conditions);
+
+			$matches = 0;
+			foreach ($docs AS $dte) {
+				foreach ($dte['matches'] AS $match) {
+					$this->Doc->id = $match['id'];
+					$this->Doc->save(
+						array(
+							'parent_id' => $dte['details']['id'],
+							'matched' => 1
+						)
+					);
+
+					$matches++;
+				}
+				
+				// Se actualiza el DTE como matcheado con sus cedibles
+				$this->Doc->id = $dte['details']['id'];
+				$this->Doc->saveField('matched', 1);
+
+				// Se genera pdf automáticamente.
+				if (!Configure::read('debug'))
+					$this->Doc->saveField('file_pdf', $this->pdf($row['Doc']['id']));
+			}
+
+			return $matches;
+		}
+
 	}
