@@ -727,25 +727,27 @@
 
 			$matches = 0;
 			foreach ($docs AS $dte) {
-				foreach ($dte['matches'] AS $match) {
-					$this->Doc->id = $match['id'];
-					$this->Doc->save(
-						array(
-							'parent_id' => $dte['details']['id'],
-							'matched' => 1
-						)
-					);
+				if (!empty($dte['matches'])) {
+					foreach ($dte['matches'] AS $match) {
+						$this->Doc->id = $match['id'];
+						$this->Doc->save(
+							array(
+								'parent_id' => $dte['details']['id'],
+								'matched' => 1
+							)
+						);
 
-					$matches++;
+						$matches++;
+					}
+					
+					// Se actualiza el DTE como matcheado con sus cedibles
+					$this->Doc->id = $dte['details']['id'];
+					$this->Doc->saveField('matched', 1);
+
+					// Se genera pdf automáticamente.
+					if (!Configure::read('debug'))
+						$this->Doc->saveField('file_pdf', $this->pdf($row['Doc']['id']));
 				}
-				
-				// Se actualiza el DTE como matcheado con sus cedibles
-				$this->Doc->id = $dte['details']['id'];
-				$this->Doc->saveField('matched', 1);
-
-				// Se genera pdf automáticamente.
-				if (!Configure::read('debug'))
-					$this->Doc->saveField('file_pdf', $this->pdf($row['Doc']['id']));
 			}
 
 			return $matches;
