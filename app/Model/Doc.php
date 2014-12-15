@@ -10,6 +10,24 @@
 			)
 		);
 
+		public $virtualFields = array();
+		
+		public $validate = array();
+		
+		public $search = null;
+		
+		/*
+		 * Opciones por defecto para la consulta de los avisos
+		 */
+		public $default = array();
+		
+		public function __construct($id = false, $table = null, $ds = null) {
+			parent::__construct($id, $table, $ds);
+			
+			$this->virtualFields['mismatched'] = 'IF(DATE(DATE_ADD(Doc.processed, INTERVAL Store.mismatch_days DAY)) < \'' . date('Y-m-d') . '\', 1, 0)';
+			$this->virtualFields['danger'] = 'IF(Doc.matched, 0, IF(DATE(DATE_ADD(Doc.processed, INTERVAL (Store.mismatch_days + Store.warning_days) DAY)) < \'' . date('Y-m-d') . '\', 1, 0))';
+		}
+
 		public function afterFind(array $results, $primary = false) {
 			\App::uses('CakeNumber', 'Utility');
 

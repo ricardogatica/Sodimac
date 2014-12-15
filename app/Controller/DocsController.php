@@ -1,5 +1,7 @@
 <?php
 
+	set_time_limit(0);
+
 	App::uses('AppController', 'Controller');
 
 	class DocsController extends AppController {
@@ -8,7 +10,7 @@
 
 		}
 
-		public function index($type = 'match') {
+		public function index($type = 'matched') {
 			$conditions = array();
 
 			if ($this->request->data) {
@@ -40,19 +42,21 @@
 
 					$conditions['Doc.' . $key . ' LIKE'] = '%' . $value . '%';
 				};
-
 			}
+
 			
 			if (!Configure::read('debug'))
 				$conditions['Doc.store_id'] = array_keys($this->stores_users_active);
+			$conditions['Doc.exported'] = 0;
 
-			if ($type == 'match') {
-				$conditions['Doc.match'] = 1;
-				//$conditions['Doc.dte'] = array(0,1);
+			if ($type == 'matched') {
+				$conditions['Doc.dte'] = 1;
+				$conditions['Doc.matched'] = 1;
 			}
 			else {
-				//$conditions['Doc.dte'] = 1;
-				$conditions['DATE(DATE_ADD(Doc.processed, INTERVAL 3 DAY)) <'] = date('Y-m-d');
+				$conditions['Doc.matched'] = 0;
+				$conditions['Doc.dte'] = array(1, 0);
+				$conditions['Doc.mismatched'] = 1; // Se muestran documentos que no han sido match
 			}
 
 			$this->set(compact('type'));
@@ -67,7 +71,7 @@
 						'store_id',
 						'type_id',
 						'processed',
-						'match',
+						'matched',
 						'printable',
 						'sendable',
 						'dte',
@@ -83,6 +87,8 @@
 						'npvt_0',
 						'npvt_1',
 						'npvt_2',
+
+						'danger'
 					),
 					'contain' => array(
 						'Type.alias',
@@ -95,11 +101,16 @@
 			$this->set(compact('docs'));
 		}
 
-		public function edit($id = null) {
-
+		public function details($id = null, $matched = false, $dte = false) {
 			$conditions = array(
 				'Doc.id' => $id
 			);
+
+			if ($matched)
+				$conditions['Doc.matched'] = 1;
+
+			if ($dte)
+				$conditions['Doc.dte'] = 1;
 
 			if (!Configure::read('debug'))
 				$conditions['Doc.store_id'] = array_keys($this->stores_users_active);
@@ -115,11 +126,24 @@
 				)
 			);
 
-			$this->request->data = $details;
+			if (empty($details)) {
+				$this->Session->setFlash(__('Documento no existe o no esta asociado a las tiendas designadas a su usuario.'), 'alert', array('plugin' => 'BoostCake', 'class' => 'alert-warning'));
+				$this->redirect('/');
+			}
 
+			if ($matched && !$details['Doc']['matched']) {
+				$this->Session->setFlash(__('El documento no ha sido conciliado.'));
+				$this->redirect('/');
+			}
+
+			// Se buscan todos los documentos cedibles asociados.
 			$conditions = array(
-				'Doc.parent_id' => $id
+				'Doc.parent_id' => $id,
+				'Doc.dte' => 0
 			);
+
+			if ($matched)
+				$conditions['Doc.matched'] = 1;
 
 			if (!Configure::read('debug'))
 				$conditions['Doc.store_id'] = array_keys($this->stores_users_active);
@@ -127,9 +151,57 @@
 			$documents = $this->Doc->find(
 				'all',
 				array(
-					'conditions' => $conditions
+					'conditions' => $conditions,
+					'contain' => array(
+						'Store',
+						'Type'
+					)
 				)
 			);
+
+			// Se buscan todas las imagenes.
+			$images = array();
+
+			if (!empty($details['Doc']['images'])) {
+				foreach ($details['Doc']['images'] AS $image) {
+					$images[] = $image;
+				}
+			}
+
+			if (!empty($documents)) {
+				foreach ($documents AS $row) {
+					if (!empty($row['Doc']['images'])) {
+						foreach ($row['Doc']['images'] AS $image) {
+							$images[] = $image;
+						}
+					}
+				}
+			}
+	
+			// Se buscan todos los posibles documentos cedibles que podrías hacer match
+			$potential = array();
+			//$potential = $this->match(false, array('Doc.id' => $details['Doc']['id']))
+
+			$data = compact('details', 'documents', 'images', 'potential');
+
+			$this->set($data);
+
+			return $data;
+		}
+
+		public function edit($id = null) {
+			$data = $this->details($id);
+
+			if (!empty($this->request->data)) {
+				$this->Doc->id = $data['details']['Doc']['id'];
+				$this->Doc->save($this->request->data);
+
+				$this->Session->setFlash(__('Se módifico exitosamente el documento tipo %s', $data['details']['Type']['name']), 'alert', array('plugin' => 'BoostCake', 'class' => 'alert-success'));
+				$this->redirect($this->referer());
+			}
+			else {
+				$this->request->data['Doc'] = $data['details']['Doc'];
+			}
 
 			$this->Doc->Type->virtualFields['name'] = 'CONCAT(Type.alias,\' (\',Type.name,\')\')';
 
@@ -146,12 +218,15 @@
 			$this->set(compact('details', 'documents', 'types'));
 		}
 
-		public function print_pdf($id = 0) {
-			$this->autoRender = false;
-			$path = $this->pdf($id);
-			$this->response->file($path, array('download' => false, 'name' => basename($path)));
-		}
+		public function delete($id = null) {
+			$this->details($id);
 
+			$this->Doc->delete($id);
+			$this->Doc->deleteAll(array('parent_id' => $id));
+			$this->Session->setFlash(__('Se ha eliminado el documento.'));
+			$this->redirect($this->referer());
+
+		}
 
 		/**
 		 * Método que permite la búsqueda de los documentos a través:
@@ -171,13 +246,18 @@
 
 		}
 
+		/**
+		 * Método que exporta a PDF los DTE conciliados
+		 */
 		public function pdf($id = null) {
+			$data = $this->details($id, true, true);
+
 			$details = $this->Doc->find(
 				'first',
 				array(
 					'conditions' => array(
 						'Doc.id' => $id,
-						'Doc.match' => 1,
+						'Doc.matched' => 1,
 						'Doc.dte' => 1
 					),
 					'contain' => array(
@@ -187,38 +267,14 @@
 				)
 			);
 
-			if (!$details['Doc']['match']) {
+			if (!$details['Doc']['matched']) {
 				$this->Session->setFlash(__('El DTE no tiene cedibles asociados.'));
 				$this->redirect('/');
 			}
 
-			if (empty($details['Doc']['images'])) {
+			if (empty($data['images'])) {
 				$this->Session->setFlash(__('El DTE no tiene imagen.'));
 				$this->redirect('/');
-			}
-
-			$images = array();
-
-			foreach ($details['Doc']['images'] AS $image) {
-				$images[] = $image;
-			}
-
-			$documents = $this->Doc->find(
-				'all',
-				array(
-					'conditions' => array(
-						'Doc.parent_id' => $details['Doc']['id'],
-						'Doc.match' => 1
-					)
-				)
-			);
-
-			foreach ($documents AS $row) {
-				if (!empty($row['Doc']['images'])) {
-					foreach ($row['Doc']['images'] AS $image) {
-						$images[] = $image;
-					}
-				}
 			}
 			
 			$pdf = '<html>'
@@ -228,7 +284,7 @@
 			. '<body>'
 			;
 
-			foreach ($images AS $image) {
+			foreach ($data['images'] AS $image) {
 				if (!file_exists($image['path']))
 					continue;
 
@@ -247,7 +303,6 @@
 				$img_height = (int)($height / $ratio);
 
 				if ($img_width < $min_width) {
-					//$height = 1956;
 					if ($height < 1600) {
 						$ratio = $height / $min_height;
 					}
@@ -300,6 +355,48 @@
 			sleep(1);
 
 			return $_down;
+		}
+
+		public function pdf_view($id = null) {
+			$this->autoRender = false;
+
+			$conditions = array(
+				'Doc.id' => $id
+			);
+
+			if (!Configure::read('debug'))
+				$conditions['Doc.store_id'] = array_keys($this->stores_users_active);
+
+			$details = $this->Doc->find(
+				'first',
+				array(
+					'conditions' => $conditions,
+					'contain' => array(
+						'Store',
+						'Type'
+					)
+				)
+			);
+
+			if (empty($details)) {
+				$this->Session->setFlash(__('No se puede imprimir el documento.'));
+			}
+
+			if ($details['Doc']['file_pdf']) {
+				$path = $details['Doc']['file_pdf'];
+			}
+			else {
+				$path = $this->pdf($details['Doc']['id']);
+			}
+			
+			$this->response->file($path, array('download' => false, 'name' => basename($path)));
+		}
+
+		/**
+		 * Método que permite exportar el documento para ser impreso o enviar a correo electrónico.
+		 */
+		public function export($id = null) {
+			$this->details($id, true, true);
 		}
 
 		public function import() {
@@ -453,7 +550,7 @@
 			$message = __('Se han importado %n DTE.', $imports);
 			if ($matched = $this->match()) {
 				$message.= __('Se han conciliado %n DTE', $matched);
-				$type = 'match';
+				$type = 'matched';
 			}
 
 			$this->Session->setFlash($message);
@@ -465,23 +562,28 @@
 			$type = 'dte';
 			if ($matched = $this->match(false)) {
 				$this->Session->setFlash(__('Se han conciliado %n DTE', $matched));
-				$type = 'match';
+				$type = 'matched';
 			}
 
 			$this->redirect(array('controller' => 'docs', 'action' => 'index', $type));
 		}
 
-		public function match($cron = true) {
+		/**
+		 * Método que realiza match de los DTE con los documentos cedibles.
+		 */
+		public function match($cron = true, $conditions = array()) {
 			$this->autoRender = false;
 
 			// Traigo todo los dte que no tienen documentos asociados
 			$this->Doc->virtualFields['cedibles'] = '(SELECT COUNT(id) FROM docs WHERE parent_id = Doc.id AND dte = 0)';
 
-			$conditions = array(
-				'Doc.match' => 0,
+			$conditions_default = array(
+				'Doc.matched' => 0,
 				'Doc.dte' => 1,
 				'Doc.cedibles' => 0
 			);
+
+			$conditions = Hash::merge($conditions_default, $conditions);
 
 			if (!$cron && empty($this->stores_users_active))
 				return __('No se puede realizar match manual');
@@ -576,7 +678,7 @@
 					continue;
 
 				if (!empty($conditions)) {
-					$conditions['match'] = 0; // No debe estar unido a ningún DTE (Cover)
+					$conditions['matched'] = 0; // No debe estar unido a ningún DTE (Cover)
 					$conditions['dte'] = 0; // No debe ser DTE (Cover)
 
 					$cedibles = $this->Doc->find(
@@ -608,7 +710,7 @@
 
 						$cedible_data = array(
 							'parent_id' => $row['Doc']['id'],
-							'match' => 1
+							'matched' => 1
 						);
 
 						$this->Doc->save($cedible_data);
@@ -616,11 +718,13 @@
 
 					// Se actualiza el DTE como matcheado con sus cedibles
 					$this->Doc->id = $row['Doc']['id'];
-					$this->Doc->saveField('match', 1);
+					$this->Doc->saveField('matched', 1);
+
+					// Se genera pdf automáticamente.
+					if (!Configure::read('debug'))
+						$this->Doc->saveField('file_pdf', $this->pdf($row['Doc']['id']));
 
 					$matched++;
-
-					debug(compact('conditions', 'row', 'cedibles'));
 				}				
 			}
 

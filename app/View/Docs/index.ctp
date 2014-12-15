@@ -2,7 +2,7 @@
 	<br />
 
 	<div class="btn-group btn-group-justified" role="group">
-		<?php echo $this->Html->link(__('Documentos conciliados'), array('controller' => 'docs', 'action' => 'index', 'match'), array('class' => 'btn btn-default ' . ($type == 'match' ? 'active' : ''))); ?>
+		<?php echo $this->Html->link(__('Documentos conciliados'), array('controller' => 'docs', 'action' => 'index', 'matched'), array('class' => 'btn btn-default ' . ($type == 'matched' ? 'active' : ''))); ?>
 		<?php echo $this->Html->link(__('Documentos por conciliar'), array('controller' => 'docs', 'action' => 'index', 'dte'), array('class' => 'btn btn-default ' . ($type == 'dte' ? 'active' : ''))); ?>
 	</div>
 
@@ -46,6 +46,7 @@
 				<thead>
 					<tr>
 						<th></th>
+						<th class="text-center">#</th>
 						<th class="text-center"><?php echo __('Tienda'); ?></th>
 						<th class="text-center"><?php echo __('Fecha'); ?></th>
 
@@ -79,8 +80,9 @@
 					</tr>
 				<?php endif; ?>
 				<?php foreach ($docs AS $row): ?>
-					<tr class="small">
+					<tr class="small <?php echo $row['Doc']['danger'] ? 'danger' : ''; ?>">
 						<td class="text-center"><?php echo $this->Form->checkbox('doc.' + $row['Doc']['id'], array('class' => 'checkbox')); ?></td>
+						<td class="text-center"><?php echo $row['Doc']['id']; ?></td>
 						<td class="text-center"><?php echo $row['Store']['cod']; ?></td>
 						<td class="text-center"><?php echo $this->Time->format('d/m/Y', $row['Doc']['processed']); ?></td>
 
@@ -103,9 +105,8 @@
 
 								$options[] = $this->Html->link(__('Editar'), array('controller' => 'docs', 'action' => 'edit', $row['Doc']['id']));
 
-								if ($row['Doc']['match']) {
-									$options[] = $this->Html->link(__('Imprimir'), array('controller' => 'docs', 'action' => 'print_pdf', $row['Doc']['id']), array('target' => '_blank'));
-									$options[] = $this->Html->link(__('Enviar'), array());
+								if ($row['Doc']['matched']) {
+									$options[] = $this->Html->link(__('Exportar'), array('controller' => 'docs', 'action' => 'export', $row['Doc']['id']), array('class' => 'fancybox'));
 								}
 
 								$options[] = $this->Html->link(__('Eliminar'), array('controller' => 'docs', 'action' => 'delete'), array(), __('¿Realmente deseas eliminar el documento?'));
