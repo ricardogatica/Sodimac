@@ -113,7 +113,7 @@
 								$options[] = $this->Html->link(__('Editar'), array('controller' => 'docs', 'action' => 'edit', $row['Doc']['id']));
 
 								if ($row['Doc']['matched']) {
-									$options[] = $this->Html->link(__('Imprimir'), array('controller' => 'docs', 'action' => 'pdf_print', $row['Doc']['id']), array('class' => 'fancybox'));
+									$options[] = $this->Html->link(__('Imprimir'), array('controller' => 'docs', 'action' => 'pdf_print', $row['Doc']['id']), array('class' => 'fancybox', 'target' => '_blank'));
 
 									$options[] = $this->Html->link(__('Enviar'), array('controller' => 'docs', 'action' => 'send', $row['Doc']['id']), array('class' => 'fancybox'));
 
