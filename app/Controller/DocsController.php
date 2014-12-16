@@ -587,7 +587,7 @@
 								foreach ($this->request->data['doc'] AS $doc) {
 									if ($doc != 0) {
 										$docs[] = $doc;
-										$this->push($doc);
+										$this->push($doc, $dte);
 									}
 								}
 							}
@@ -656,16 +656,15 @@
 		/**
 		 * Método que permite asociar un documento con otro
 		 */
-		public function push($id = 0, $parent_id = 0) {
-			$data = $this->details($id);
+		public function push($origin_id = 0, $destiny_id = 0) {
+			$data = $this->details($origin_id);
 
 			if ($data['details']['Doc']['dte']) {
-				$this->Doc->id = $id;
-				$this->Doc->saveField('parent_id', $parent_id);
+				$this->Doc->updateAll(array('parent_id' => $origin_id), array('Doc.id' => $destiny_id));
 			}
 			else {
-				$this->Doc->id = $id;
-				$this->Doc->saveField('parent_id', $parent_id);
+				$this->Doc->id = $origin_id;
+				$this->Doc->saveField('parent_id', $destiny_id);
 			}
 		}
 
@@ -860,12 +859,14 @@
 			if (!$data['details']['Doc']['exported']) {
 
 				if ($data['details']['Doc']['dte']) {
-					$this->Doc->id = $data['details']['Doc']['id'];
-					$this->Doc->saveField('matched', 0);
-
-					$this->Doc->updateAll(array('matched' => 0), array('parent_id' => $data['details']['Doc']['id']));
+					$this->Doc->updateAll(array('matched' => 0), array('Doc.id' => $data['details']['Doc']['id']));
+					$this->Doc->updateAll(array('matched' => 0, 'parent_id' => 0), array('parent_id' => $data['details']['Doc']['id']));
 				}
-
+				else {
+					$this->Doc->updateAll(array('matched' => 0), array('Doc.id' => $data['details']['Doc']['parent_id'])); #DTE
+					$this->Doc->updateAll(array('matched' => 0), array('Doc.id' => $data['details']['Doc']['id']));
+					$this->Doc->updateAll(array('matched' => 0, 'parent_id' => 0), array('parent_id' => $data['details']['Doc']['parent_id']));
+				}
 			}			
 		}
 
