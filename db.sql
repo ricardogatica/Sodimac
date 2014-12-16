@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.1.44)
 # Database: freelance_sodimac
-# Generation Time: 2014-12-16 14:28:45 +0000
+# Generation Time: 2014-12-16 22:56:16 +0000
 # ************************************************************
 
 
@@ -78,6 +78,8 @@ CREATE TABLE `docs` (
   `exported` tinyint(1) NOT NULL DEFAULT '0',
   `printable` tinyint(1) NOT NULL DEFAULT '0',
   `sendable` tinyint(1) NOT NULL DEFAULT '0',
+  `printed` tinyint(1) NOT NULL DEFAULT '0',
+  `sent` tinyint(1) NOT NULL DEFAULT '0',
   `dte` tinyint(1) NOT NULL DEFAULT '0',
   `created` datetime NOT NULL,
   `modified` datetime NOT NULL,

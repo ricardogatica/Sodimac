@@ -20,7 +20,7 @@
 				<tr>
 					<td colspan="6" class="text-center">
 						<div class="alert alert-info">
-							<?php echo __('No hay DTE para fusionar.'); ?>
+							<?php echo __('No hay DTE para conciliar.'); ?>
 						</div>
 					</td>
 				</tr>
@@ -41,7 +41,7 @@
 
 	<div class="col-lg-6">
 		<h2 class="page-header">
-			<?php echo $this->Html->link(__('Fusionar documentos'), array(), array('class' => 'submit btn btn-primary pull-right')) ?>
+			<?php echo $this->Html->link(__('Conciliar documentos'), array(), array('class' => 'submit btn btn-primary pull-right')) ?>
 			<?php echo __('Cedibles'); ?>
 		</h2>
 
@@ -59,9 +59,9 @@
 			<tbody>
 			<?php if (empty($docs)): ?>
 				<tr>
-					<td colspan="5" class="text-center">
+					<td colspan="6" class="text-center">
 						<div class="alert alert-info">
-							<?php echo __('No hay documentos cedibles para fusionar.'); ?>
+							<?php echo __('No hay documentos cedibles para conciliar.'); ?>
 						</div>
 					</td>
 				</tr>

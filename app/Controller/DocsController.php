@@ -470,7 +470,7 @@
 						$doc['type_id'] = array_search($data['_TipoDocumento'], $types);
 
 					if (!empty($data['_NumeroDocumento']))
-						$doc['number'] = (int)$data['_NumeroDocumento'];
+						$doc['number'] = $data['_NumeroDocumento'];
 
 					if (!empty($data['_NombreRazonSocial']))
 						$doc['company'] = $data['_NombreRazonSocial'];
