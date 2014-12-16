@@ -193,7 +193,7 @@
 				if ($this->Doc->save($this->request->data)) {
 					$this->Session->setFlash(__('Se módifico exitosamente el documento tipo %s', $data['details']['Type']['name']), 'alert', array('plugin' => 'BoostCake', 'class' => 'alert-success'));
 
-					if ($data['details']['Doc']['dte'] && $data['details']['Doc']['matched']) {
+					if ($data['details']['Doc']['matched']) {
 						$this->unmatch($data['details']['Doc']['id']);
 						$this->Session->setFlash(__('Se modifico exitosamente el documento y se han separados los documentos conciliados.'), 'alert', array('plugin' => 'BoostCake', 'class' => 'alert-warning'));
 					}
@@ -854,10 +854,9 @@
 		}
 
 		public function unmatch($id = null) {
-			$data = $this->details($id, true, true);
+			$data = $this->details($id, true);
 
 			if (!$data['details']['Doc']['exported']) {
-
 				if ($data['details']['Doc']['dte']) {
 					$this->Doc->updateAll(array('matched' => 0), array('Doc.id' => $data['details']['Doc']['id']));
 					$this->Doc->updateAll(array('matched' => 0, 'parent_id' => 0), array('parent_id' => $data['details']['Doc']['id']));

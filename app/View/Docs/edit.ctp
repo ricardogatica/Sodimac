@@ -4,6 +4,7 @@
 <?php endif; ?>
 
 	<?php echo __('Edición de %s Nº: %s', $details['Type']['name'], $details['Doc']['number'] ? $details['Doc']['number'] : '--'); ?>
+	<small><?php echo $details['Doc']['matched'] ? __('Documento conciliado') : __('Documento sin conciliar'); ?></small>
 </h1>
 
 <div class="row">
