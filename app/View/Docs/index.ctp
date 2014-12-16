@@ -58,7 +58,7 @@
 						<th class="text-center"><?php echo __('Fecha'); ?></th>
 
 						<th class="text-center"><?php echo __('Tipo'); ?></th>
-						<th class="text-center"><?php echo __('# DTE'); ?></th>
+						<th class="text-center"><?php echo $type == 'matched' ? __('# DTE') : __('Número'); ?></th>
 
 						<th class="text-center"><?php echo __('Razón Social'); ?></th>
 						<th class="text-center"><?php echo __('R.U.T.'); ?></th>

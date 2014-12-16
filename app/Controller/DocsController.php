@@ -190,9 +190,18 @@
 
 			if (!empty($this->request->data)) {
 				$this->Doc->id = $data['details']['Doc']['id'];
-				$this->Doc->save($this->request->data);
+				if ($this->Doc->save($this->request->data)) {
+					$this->Session->setFlash(__('Se módifico exitosamente el documento tipo %s', $data['details']['Type']['name']), 'alert', array('plugin' => 'BoostCake', 'class' => 'alert-success'));
 
-				$this->Session->setFlash(__('Se módifico exitosamente el documento tipo %s', $data['details']['Type']['name']), 'alert', array('plugin' => 'BoostCake', 'class' => 'alert-success'));
+					if ($data['details']['Doc']['dte'] && $data['details']['Doc']['matched']) {
+						$this->unmatch($data['details']['Doc']['id']);
+						$this->Session->setFlash(__('Se modifico exitosamente el documento y se han separados los documentos conciliados.'), 'alert', array('plugin' => 'BoostCake', 'class' => 'alert-warning'));
+					}
+				}
+				else {
+					$this->Session->setFlash(__('Se ha producido un error al intentar editar el documento, intentalo más tarde.'), 'alert', array('plugin' => 'BoostCake', 'class' => 'alert-danger'));
+				}
+
 				$this->redirect($this->referer());
 			}
 			else {
@@ -231,13 +240,6 @@
 		 * - Fecha de procesamiento
 		 */
 		public function search($dte = true) {
-
-		}
-
-		/**
-		 * Método que permite asociar un documento con otro
-		 */
-		public function push($origin_id = 0, $dentiny_id = 0) {
 
 		}
 
@@ -384,7 +386,21 @@
 		 * Método que permite exportar el documento para ser impreso o enviar a correo electrónico.
 		 */
 		public function export($id = null) {
-			$this->details($id, true, true);
+			$data = $this->details($id, true, true);
+
+			if ($data['details']['Doc']['printed'] || $data['details']['Doc']['sent']) {
+				$this->pdf($id);
+
+				$this->Doc->id = $id;
+				$this->Doc->saveField('exported', 1);
+
+				$this->Session->setFlash(__('El archivo se ha exportado correctamente.'), 'alert', array('plugin' => 'BoostCake', 'class' => 'alert-success'));
+				$this->redirect(array('controller' => 'docs', 'action' => 'index', 'matched'));
+			}
+			else {
+				$this->Session->setFlash(__('No se puede exportar el archivo con Número DTE %s ya que no ha sido impreso o enviado.', $data['details']['Doc']['number']), 'alert', array('plugin' => 'BoostCake', 'class' => 'alert-warning'));
+				$this->redirect(array('controller' => 'docs', 'action' => 'index', 'matched'));
+			}
 		}
 
 		public function import() {
@@ -548,20 +564,55 @@
 			}
 
 			$type = 'dte';
-			$message = __('Se han importado %n DTE.', $imports);
+			$message = __('Se han importado %d DTE.', $imports);
 			if ($matched = $this->match()) {
-				$message.= __('Se han conciliado %n DTE', $matched);
+				$message.= ' ' . __('Se han conciliado %d DTE', $matched);
 				$type = 'matched';
 			}
 
-			$this->Session->setFlash($message);
+			$this->Session->setFlash($message, 'alert', array('plugin' => 'BoostCake', 'class' => 'alert-info'));
 
 			$this->redirect(array('controller' => 'docs', 'action' => 'index', $type));
 		}
 
 		public function manual() {
+			if (!empty($this->request->data)) {
+				$dte = false;
+
+				if ($this->request->data['dte']) {
+					foreach ($this->request->data['dte'] AS $dte) {
+						if ($dte != 0) {
+							$docs = array();
+							if (!empty($this->request->data['doc'])) {
+								foreach ($this->request->data['doc'] AS $doc) {
+									if ($doc != 0) {
+										$docs[] = $doc;
+										$this->push($doc);
+									}
+								}
+							}
+							break;
+						}
+					}
+				}
+
+				if (!$dte || empty($docs)) {
+					$this->Session->setFlash(__('Se deben seleccionar los documentos que se desean fusionar.'), 'alert', array('plugin' => 'BoostCake', 'class' => 'alert-warning'));
+					$this->redirect(array('controller' => 'docs', 'action' => 'manual'));
+				}
+
+				$this->Doc->id = $dte;
+				$this->Doc->saveField('matched', 1);
+
+				$this->Doc->updateAll(array('Doc.matched' => 1), array('Doc.id' => $docs));
+
+				$this->Session->setFlash(__('Se ha fusionado el documento exitosamente.'), 'alert', array('plugin' => 'BoostCake', 'class' => 'alert-success'));
+				$this->redirect(array('controller' => 'docs', 'action' => 'manual'));
+			}
+
 			$conditions = array(
-				'Doc.match' => 0,
+				'Doc.matched' => 0,
+				'Doc.mismatched' => 1,
 				'Doc.dte' => 1
 			);
 
@@ -571,26 +622,51 @@
 			$dtes = $this->Doc->find(
 				'all',
 				array(
-					'conditions' => $conditions
+					'conditions' => $conditions,
+					'contain' => array(
+						'Store.cod',
+						'Type.alias'
+					)
 				)
 			);
 
 			$conditions = array(
-				'Doc.match' => 0,
-				'Doc.dte' => 1
+				'Doc.matched' => 0,
+				'Doc.mismatched' => 1,
+				'Doc.dte' => 0
 			);
 
 			if (!Configure::read('debug'))
 				$conditions['Doc.store_id'] = array_keys($this->stores_users_active);
 
-			$documents = $this->Doc->find(
+			$docs = $this->Doc->find(
 				'all',
 				array(
-					'conditions' => $conditions
+					'conditions' => $conditions,
+					'contain' => array(
+						'Store.cod',
+						'Type.alias'
+					)
 				)
 			);
 
-			$this->set(compact('dtes', 'documents'));
+			$this->set(compact('dtes', 'docs'));
+		}
+
+		/**
+		 * Método que permite asociar un documento con otro
+		 */
+		public function push($id = 0, $parent_id = 0) {
+			$data = $this->details($id);
+
+			if ($data['details']['Doc']['dte']) {
+				$this->Doc->id = $id;
+				$this->Doc->saveField('parent_id', $parent_id);
+			}
+			else {
+				$this->Doc->id = $id;
+				$this->Doc->saveField('parent_id', $parent_id);
+			}
 		}
 
 		public function potential_matches_dte($id = null) {
@@ -778,8 +854,19 @@
 			return $matches;
 		}
 
-		public function unmatch() {
-			
+		public function unmatch($id = null) {
+			$data = $this->details($id, true, true);
+
+			if (!$data['details']['Doc']['exported']) {
+
+				if ($data['details']['Doc']['dte']) {
+					$this->Doc->id = $data['details']['Doc']['id'];
+					$this->Doc->saveField('matched', 0);
+
+					$this->Doc->updateAll(array('matched' => 0), array('parent_id' => $data['details']['Doc']['id']));
+				}
+
+			}			
 		}
 
 	}

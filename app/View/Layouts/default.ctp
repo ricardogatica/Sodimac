@@ -32,6 +32,11 @@
 			$('.fancybox').fancybox();
 		});
 	</script>
+	<style type="text/css">
+		.text-muted {
+			color: #ccc;
+		}
+	</style>
 </head>
 <body>
 

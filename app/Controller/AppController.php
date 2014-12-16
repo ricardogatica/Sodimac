@@ -39,6 +39,9 @@
 		public function beforeFilter() {
 			parent::beforeFilter();
 
+			$this->Security->csrfCheck = false;
+			$this->Security->validatePost = false;
+
 			$stores_users = array();
 
 			if (isset($this->request->params['iframe'])) {
