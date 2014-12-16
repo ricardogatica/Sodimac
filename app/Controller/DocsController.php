@@ -352,25 +352,30 @@
 			return $_down;
 		}
 
+		public function pdf_send($id) {
+			$data = $this->details($id, true, true);
+
+			$this->Doc->id = $data['details']['Doc']['id'];
+			$this->Doc->saveField('sent', 1);
+
+			$path = $this->pdf($data['details']['Doc']['id']);
+		}
+
 		public function pdf_print($id) {
-			$this->layout = 'print';
+			$data = $this->details($id, true, true);
 
-			$this->details($id, true, true);
+			$this->Doc->id = $data['details']['Doc']['id'];
+			$this->Doc->saveField('printed', 1);
 
-			$this->set('url', Router::url(array('controller' => 'docs', 'action' => 'pdf_view', $id)));
+			$path = $this->pdf($data['details']['Doc']['id']);
+			
+			$this->response->file($path, array('download' => false, 'name' => basename($path)));
 		}
 
 		public function pdf_view($id = null) {
-			$this->autoRender = false;
-
 			$data = $this->details($id, true, true);
 
-			if ($data['details']['Doc']['file_pdf']) {
-				$path = $data['details']['Doc']['file_pdf'];
-			}
-			else {
-				$path = $this->pdf($data['details']['Doc']['id']);
-			}
+			$path = $this->pdf($data['details']['Doc']['id']);
 			
 			$this->response->file($path, array('download' => false, 'name' => basename($path)));
 		}
@@ -555,15 +560,37 @@
 		}
 
 		public function manual() {
-			$type = 'dte';
-			$this->Session->setFlash(__('No se han conciliado documentos'), 'alert', array('plugin' => 'BoostCake', 'class' => 'alert-warning'));
+			$conditions = array(
+				'Doc.match' => 0,
+				'Doc.dte' => 1
+			);
 
-			if ($matched = $this->match(false)) {
-				$this->Session->setFlash(__('Se han conciliado %n DTE', $matched), 'alert', array('plugin' => 'BoostCake', 'class' => 'alert-success'));
-				$type = 'matched';
-			}
+			if (!Configure::read('debug'))
+				$conditions['Doc.store_id'] = array_keys($this->stores_users_active);
 
-			$this->redirect(array('controller' => 'docs', 'action' => 'index', $type));
+			$dtes = $this->Doc->find(
+				'all',
+				array(
+					'conditions' => $conditions
+				)
+			);
+
+			$conditions = array(
+				'Doc.match' => 0,
+				'Doc.dte' => 1
+			);
+
+			if (!Configure::read('debug'))
+				$conditions['Doc.store_id'] = array_keys($this->stores_users_active);
+
+			$documents = $this->Doc->find(
+				'all',
+				array(
+					'conditions' => $conditions
+				)
+			);
+
+			$this->set(compact('dtes', 'documents'));
 		}
 
 		public function potential_matches_dte($id = null) {
