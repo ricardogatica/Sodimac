@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<form:Documents xmlns:form="http://www.abbyy.com/FlexiCapture/Schemas/Export/FormData.xsd" xmlns:addData="http://www.abbyy.com/FlexiCapture/Schemas/Export/AdditionalFormData.xsd">
+	<_DTE:_DTE xmlns:_DTE="http://www.abbyy.com/FlexiCapture/Schemas/Export/DTE.xsd">
+		<_Sección_de_documento_1>
+			<_TipoDocumento>FAC</_TipoDocumento>
+			<_NumeroDocumento>061640247</_NumeroDocumento>
+			<_CodigoTienda>087</_CodigoTienda>
+			<_NombreRazonSocial>SOC. CONST. FCO. LORCA LTDA.</_NombreRazonSocial>
+			<_RUTCliente>76779980-2</_RUTCliente>
+			<_NroOC>25728</_NroOC>
+			<_NroGuiaDespacho>00185-019591664</_NroGuiaDespacho>
+			<_NroPVT>087010521/00000/S</_NroPVT>
+			<_CondicionPago>A1231065829/08/2014</_CondicionPago>
+			<_Lote>Lote FacAutoVtaStock</_Lote>
+			<_FechaProcesamiento>11:39:30 06.12.2014</_FechaProcesamiento>
+		</_Sección_de_documento_1>
+	</_DTE:_DTE>
+</form:Documents>
