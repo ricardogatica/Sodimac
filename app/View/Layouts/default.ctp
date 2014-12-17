@@ -91,7 +91,7 @@
 								<?php echo $this->Html->link(__('Portada'), '/'); ?>
 							</li>
 							<li>
-								<?php echo $this->Html->link(__('Manual'), array('controller' => 'docs', 'action' => 'manual')); ?>
+								<?php echo $this->Html->link(__('Conciliación Manual'), array('controller' => 'docs', 'action' => 'manual')); ?>
 							</li>
 						<?php if (in_array(AuthComponent::user('profile'), array('developer', 'admin'))): ?>
 							<li class="dropdown">

@@ -1,5 +1,5 @@
 <h1 class="page-header">
-<?php if ($details['Doc']['dte'] && $details['Doc']['matched']): ?>
+<?php if ($details['Doc']['to_export']): ?>
 	<?php echo $this->Html->link(__('Ir a exportar'), array('controller' => 'docs', 'action' => 'export', $details['Doc']['id']), array('class' => 'btn btn-primary pull-right')); ?>
 <?php endif; ?>
 

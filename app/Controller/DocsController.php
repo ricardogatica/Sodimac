@@ -7,6 +7,8 @@
 	class DocsController extends AppController {
 		public $components = array('Paginator');
 
+		public $details = array();
+
 		public function index($type = 'matched') {
 			$conditions = array();
 
@@ -69,6 +71,7 @@
 					'matched',
 					'printable',
 					'sendable',
+					'to_export',
 					'dte',
 					'number',
 					'company',
@@ -98,6 +101,11 @@
 		}
 
 		public function details($id = null, $matched = false, $dte = false) {
+			if (!empty($this->details)) {
+				$this->set($this->details);
+				return $this->details;
+			}
+
 			$conditions = array(
 				'Doc.id' => $id
 			);
@@ -178,7 +186,7 @@
 			$potential = array();
 			//$potential = $this->match(false, array('Doc.id' => $details['Doc']['id']))
 
-			$data = compact('details', 'documents', 'images', 'potential');
+			$data = $this->details = compact('details', 'documents', 'images', 'potential');
 
 			$this->set($data);
 
@@ -246,28 +254,8 @@
 		/**
 		 * Método que exporta a PDF los DTE conciliados
 		 */
-		public function pdf($id = null) {
+		public function pdf($id = null, $type = null) {
 			$data = $this->details($id, true, true);
-
-			$details = $this->Doc->find(
-				'first',
-				array(
-					'conditions' => array(
-						'Doc.id' => $id,
-						'Doc.matched' => 1,
-						'Doc.dte' => 1
-					),
-					'contain' => array(
-						'Store',
-						'Type'
-					)
-				)
-			);
-
-			if (!$details['Doc']['matched']) {
-				$this->Session->setFlash(__('El DTE no tiene cedibles asociados.'));
-				$this->redirect('/');
-			}
 
 			if (empty($data['images'])) {
 				$this->Session->setFlash(__('El DTE no tiene imagen.'));
@@ -328,33 +316,47 @@
 			. '</html>'
 			;
 
-			$this->folderPdf = 'vendors' . DS . 'processed' . DS . date('Y', strtotime($details['Doc']['processed'])) . DS . date('m', strtotime($details['Doc']['processed'])) . DS . date('d', strtotime($details['Doc']['processed']));
+			$this->folderTmp = 'pdf' . DS . date('Y', strtotime($data['details']['Doc']['processed'])) . DS . date('m', strtotime($data['details']['Doc']['processed'])) . DS . date('d', strtotime($data['details']['Doc']['processed']));
 			$path = $dir = '';
-			foreach (explode(DS, $this->folderPdf) AS $folder) {
+			foreach (explode(DS, $this->folderTmp) AS $folder) {
 				$path.= DS . $folder;
-				if (!in_array($folder, array('vendors', 'processed')) && !file_exists(ROOT . $path) && !is_dir(ROOT . $path)) {
-					debug(ROOT . $path);
-					mkdir(ROOT . $path);
-					chmod(ROOT . $path, 0777);
+				if (!in_array($folder, array('pdf')) && !file_exists(WWW_ROOT . $path) && !is_dir(WWW_ROOT . $path)) {
+					mkdir(WWW_ROOT . $path);
+					chmod(WWW_ROOT . $path, 0777);
 				}
 			}
 
-			$_pd4ml	= ROOT . DS . 'vendors' . DS . 'pd4ml' . DS . '3.9.3' . DS . 'pd4ml.jar';
-			$_file	= ROOT . DS . APP_DIR . DS . 'tmp' . DS . 'out.html';
-			$_down	= ROOT . DS . $this->folderPdf . DS . $details['Doc']['number'] . '.pdf';
+			$pd4ml	= ROOT . DS . 'vendors' . DS . 'pd4ml' . DS . '3.9.3' . DS . 'pd4ml.jar';
+			$tmp	= WWW_ROOT . $this->folderTmp . DS . $data['details']['Doc']['number'] . '.html';
+			$down	= WWW_ROOT . $this->folderTmp . DS . $data['details']['Doc']['number'] . '.pdf';
+
+			file_put_contents($tmp, $pdf);
+
+			if ($type == 'export') {
+				$this->folderExport = 'vendors' . DS . 'processed' . DS . date('Y', strtotime($data['details']['Doc']['processed'])) . DS . date('m', strtotime($data['details']['Doc']['processed'])) . DS . date('d', strtotime($data['details']['Doc']['processed']));
+				$path = $dir = '';
+				foreach (explode(DS, $this->folderExport) AS $folder) {
+					$path.= DS . $folder;
+					if (!in_array($folder, array('vendors', 'processed')) && !file_exists(ROOT . $path) && !is_dir(ROOT . $path)) {
+						mkdir(ROOT . $path);
+						chmod(ROOT . $path, 0777);
+					}
+				}
+
+				$down = ROOT . $this->folderExport . DS . '(' . $data['details']['Doc']['number'] . ')' . '.pdf';
+			}
+
+			system("java -jar {$pd4ml} file:{$tmp} {$down}");
 			
-			file_put_contents($_file, $pdf);
-			system("java -jar {$_pd4ml} file:{$_file} {$_down}");
-			
-			$filename = explode('.', basename($_down));
-			
-			rename($_down, $_down = dirname($_down) . DS . '(' . $filename['0'] . ').'.$filename['1']);
+			//$filename = explode('.', basename($_down));
+			//rename($_down, $_down = dirname($_down) . DS . '(' . $filename['0'] . ').'.$filename['1']);
+
 			sleep(1);
 
-			return $_down;
+			return $down;
 		}
 
-		public function pdf_send($id) {
+		public function doc_send($id) {
 			$data = $this->details($id, true, true);
 
 			$this->Doc->id = $data['details']['Doc']['id'];
@@ -363,33 +365,23 @@
 			$path = $this->pdf($data['details']['Doc']['id']);
 		}
 
-		public function pdf_print($id) {
+		public function doc_print($id) {
+			$this->autoRender = false;
 			$data = $this->details($id, true, true);
 
 			$this->Doc->id = $data['details']['Doc']['id'];
 			$this->Doc->saveField('printed', 1);
 
 			$path = $this->pdf($data['details']['Doc']['id']);
-			
+
 			$this->response->file($path, array('download' => false, 'name' => basename($path)));
 		}
 
-		public function pdf_view($id = null) {
+		public function doc_export($id = null) {
 			$data = $this->details($id, true, true);
 
-			$path = $this->pdf($data['details']['Doc']['id']);
-			
-			$this->response->file($path, array('download' => false, 'name' => basename($path)));
-		}
-
-		/**
-		 * Método que permite exportar el documento para ser impreso o enviar a correo electrónico.
-		 */
-		public function export($id = null) {
-			$data = $this->details($id, true, true);
-
-			if ($data['details']['Doc']['printed'] || $data['details']['Doc']['sent']) {
-				$this->pdf($id);
+			if ($data['details']['Doc']['to_export']) {
+				$this->pdf($data['details']['Doc']['id'], 'export');
 
 				$this->Doc->id = $id;
 				$this->Doc->saveField('exported', 1);
@@ -401,6 +393,27 @@
 				$this->Session->setFlash(__('No se puede exportar el archivo con Número DTE %s ya que no ha sido impreso o enviado.', $data['details']['Doc']['number']), 'alert', array('plugin' => 'BoostCake', 'class' => 'alert-warning'));
 				$this->redirect(array('controller' => 'docs', 'action' => 'index', 'matched'));
 			}
+		}
+
+		/**
+		 * Método que permite el envío masivo de los documentos conciliados.
+		 */
+		public function send() {
+
+		}
+
+		/**
+		 * Método que permite la exportación masiva de los documentos conciliados.
+		 */
+		public function export($id = null) {
+			
+		}
+
+		/**
+		 * Método que permite la impresión masiva de los documentos conciliados.
+		 */
+		public function printout() {
+
 		}
 
 		public function import() {
@@ -470,16 +483,16 @@
 						$doc['type_id'] = array_search($data['_TipoDocumento'], $types);
 
 					if (!empty($data['_NumeroDocumento']))
-						$doc['number'] = $data['_NumeroDocumento'];
+						$doc['number'] = ltrim($data['_NumeroDocumento'], '0');
 
 					if (!empty($data['_NombreRazonSocial']))
 						$doc['company'] = $data['_NombreRazonSocial'];
 
 					if (!empty($data['_RUTCliente']))
-						$doc['document'] = $data['_RUTCliente'];
+						$doc['document'] = ltrim($data['_RUTCliente'], '0');
 
 					if (!empty($data['_NroOC'])) {
-						$doc['noc'] = $data['_NroOC'];
+						$doc['noc'] = ltrim($data['_NroOC'], '0');
 
 						$doc['noc_0'] = (int)$data['_NroOC'];
 					}
@@ -488,16 +501,16 @@
 						$doc['ngd'] = $data['_NroGuiaDespacho'];
 
 						$ngd = explode('-', $data['_NroGuiaDespacho']);
-						$doc['ngd_0'] = (int)$ngd[0];
-						$doc['ngd_1'] = (int)$ngd[1];
+						$doc['ngd_0'] = ltrim($ngd[0], '0');
+						$doc['ngd_1'] = ltrim($ngd[1], '0');
 					}
 
 					if (!empty($data['_NroPVT'])) {
 						$doc['npvt'] = $data['_NroPVT'];
 
 						$npvt = explode('/', $data['_NroPVT']);
-						$doc['npvt_0'] = (int)$npvt[0];
-						$doc['npvt_1'] = (int)$npvt[1];
+						$doc['npvt_0'] = ltrim($npvt[0], '0');
+						$doc['npvt_1'] = ltrim($npvt[1], '0');
 						$doc['npvt_2'] = $npvt[2];
 					}
 

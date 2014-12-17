@@ -31,6 +31,8 @@
 			$this->virtualFields['mismatched'] = 'IF(DATE(DATE_ADD(Doc.processed, INTERVAL Store.mismatch_days DAY)) < \'' . date('Y-m-d') . '\', 1, 0)';
 			$this->virtualFields['danger'] = 'IF(Doc.matched, 0, IF(DATE(DATE_ADD(Doc.processed, INTERVAL (Store.mismatch_days + Store.warning_days) DAY)) < \'' . date('Y-m-d') . '\', 1, 0))';
 
+			$this->virtualFields['to_export'] = 'IF((Doc.matched AND Doc.printed) OR (Doc.matched AND Doc.sent), 1, 0)';
+
 			$result = parent::find($type, $params);
 
 			return $result;
