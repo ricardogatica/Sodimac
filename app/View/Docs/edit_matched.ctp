@@ -8,25 +8,27 @@
 
 <div class="row">
 <?php foreach ($images AS $image): ?>
-	<div class="col-xs-3 col-md-3 col-lg-3">
+	<div class="col-xs-4 col-md-4 col-lg-4">
 		<div class="thumbnail">
-			<?php echo $this->Html->image($image['normal'], array('class' => 'img-responsive preview', 'data-zoom-image' => $this->Html->url($image['zoom']))); ?>
+			<?php echo $this->Html->link($this->Html->image($image['normal'], array('class' => 'img-responsive preview', 'data-zoom-image' => $this->Html->url($image['zoom']))), $image['normal'], array('escape' => false, 'target' => '_blank')); ?>
 		</div>
 	</div>
 <?php endforeach; ?>
 </div>
 
-<?php
+<?php if ($details['Doc']['dte']): ?>
 
-	
+<div class="row">
+	<div class="col-lg-12">
+		<?php echo $this->Html->link(__('+ Agregar respaldo'), array('iframe' => true, 'controller' => 'docs', 'action' => 'add', $details['Doc']['id']), array('class' => 'btn btn-block btn-success fancybox fancybox.iframe')); ?>
+	</div>
+</div>
 
-	echo $this->Html->link(__('+ Agregar respaldo'), array('iframe' => true, 'controller' => 'docs', 'action' => 'add', $details['Doc']['id']), array('class' => 'btn btn-block btn-success fancybox fancybox.iframe'));
-
-?>
+<?php endif; ?>
 
 <div class="row">
 <?php foreach ($docs AS $row): ?>
-	<div class="col-xs-3 col-md-3 col-lg-3">
+	<div class="col-xs-4 col-md-4 col-lg-4">
 		<?php
 			echo $this->Form->create(
 				'Doc',

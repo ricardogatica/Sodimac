@@ -111,7 +111,7 @@
 					<td class="text-center"><?php echo $this->Time->format('d/m/Y', $row['Doc']['processed']); ?></td>
 
 					<td class="text-center"><?php echo $row['Type']['alias']; ?></td>
-					<td class="text-center"><?php echo $this->Html->link($row['Doc']['number'], array('controller' => 'docs', 'action' => 'edit', $row['Doc']['id'])); ?></td>
+					<td class="text-center"><?php echo $this->Html->link($row['Doc']['number'], array('controller' => 'docs', 'action' => ($row['Doc']['matched'] ? 'edit_matched' : 'edit'), $row['Doc']['id'])); ?></td>
 
 					<td><?php echo $row['Doc']['company'] ? $row['Doc']['company'] : '--'; ?></td>
 					<td><?php echo $row['Doc']['document'] ? $row['Doc']['document'] : '--'; ?></td>

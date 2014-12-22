@@ -22,7 +22,7 @@
 	<?php echo $this->Html->script(array('jquery.elevateZoom-3.0.8.min.js', 'fancybox/jquery.fancybox.pack.js')); ?>
 	<script type="text/javascript">
 		$(document).ready(function(){
-			$('#previewDocument').on('load', function(){
+			$('#previewDocument, .preview').on('load', function(){
 				$(this).elevateZoom({
 					zoomType: 'inner',
 					cursor: 'crosshair'

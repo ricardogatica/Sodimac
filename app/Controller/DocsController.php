@@ -294,10 +294,21 @@
 		public function add($id = null) {
 			$this->details($id, null, true);
 
+			if (!empty($this->request->data['Push'])) {
+				foreach ($this->request->data['Push'] AS $value) {
+					if (!empty($value))
+						$this->push($value, $id);
+				}
+
+				$this->Session->setFlash(__('Se han unido los respaldos a la DTE.'), 'alert', array('plugin' => 'BoostCake', 'class' => 'alert-success'));
+				$this->redirect($this->referer());
+			}
+
 			if (!empty($this->request->data['Doc'])) {
 				$conditions = array(
 					'Doc.dte' => 0,
-					'Doc.matched' => 0
+					'Doc.matched' => 0,
+					'Doc.parent_id' => 0
 				);
 
 				if (!empty($this->request->data['Doc']['type_id']))
@@ -305,8 +316,6 @@
 
 				if (!empty($this->request->data['Doc']['number']))
 					$conditions['Doc.number'] = $this->request->data['Doc']['number'];
-
-				debug($conditions);
 
 				$documents = $this->Doc->find(
 					'all',
@@ -780,10 +789,10 @@
 		 * Método que permite asociar un documento con otro
 		 */
 		public function push($origin_id = 0, $destiny_id = 0) {
-			$data = $this->details($origin_id);
+			$data = $this->details($destiny_id);
 
 			if ($data['details']['Doc']['dte']) {
-				$this->Doc->updateAll(array('parent_id' => $origin_id), array('Doc.id' => $destiny_id));
+				$this->Doc->updateAll(array('parent_id' => $destiny_id), array('Doc.id' => $origin_id));
 			}
 			else {
 				$this->Doc->id = $origin_id;
