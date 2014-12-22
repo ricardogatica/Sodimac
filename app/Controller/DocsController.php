@@ -228,7 +228,115 @@
 				)
 			);
 
-			$this->set(compact('details', 'documents', 'types'));
+			$this->set(compact('types'));
+		}
+
+		public function edit_matched($id = null) {
+			$data = $this->details($id, null, true);
+
+			if (!empty($this->request->data)) {
+				foreach ($this->request->data['Doc'] AS $post) {
+					$this->Doc->id = $post['id'];
+					if ($this->Doc->save($post)) {
+						$this->Session->setFlash(__('Se módifico exitosamente el documento.'), 'alert', array('plugin' => 'BoostCake', 'class' => 'alert-success'));
+
+						if ($post['matched']) {
+							$this->unmatch($post['id']);
+							$this->Session->setFlash(__('Se modifico exitosamente el documento y se han separados los documentos conciliados.'), 'alert', array('plugin' => 'BoostCake', 'class' => 'alert-warning'));
+						}
+					}
+					else {
+						$this->Session->setFlash(__('Se ha producido un error al intentar editar el documento, intentalo más tarde.'), 'alert', array('plugin' => 'BoostCake', 'class' => 'alert-danger'));
+					}
+
+					$this->redirect($this->referer());
+				}
+					
+			}
+			else {
+				//$this->request->data['Doc'] = $data['details']['Doc'];
+			}
+
+			$docs = array();
+			$docs[] = $data['details'];
+
+			if (!empty($data['documents'])) {
+				$docs = array_merge($docs, $data['documents']);
+			}
+
+			foreach ($docs AS $row) {
+				if (empty($this->request->data['Doc'][$row['Doc']['id']]))
+					$this->request->data['Doc'][$row['Doc']['id']] = $row['Doc'];
+			}
+
+			$this->set(compact('docs'));
+
+			$this->Doc->Type->virtualFields['name'] = 'CONCAT(Type.alias,\' (\',Type.name,\')\')';
+
+			$types = $this->Doc->Type->find(
+				'list',
+				array(
+					'fields' => array(
+						'Type.id',
+						'Type.name'
+					)
+				)
+			);
+
+			
+
+			$this->set(compact('types'));
+		}
+
+		/**
+		 * Método que permite agregar un respaldo no conciliado en un DTE.
+		 */
+		public function add($id = null) {
+			$this->details($id, null, true);
+
+			if (!empty($this->request->data['Doc'])) {
+				$conditions = array(
+					'Doc.dte' => 0,
+					'Doc.matched' => 0
+				);
+
+				if (!empty($this->request->data['Doc']['type_id']))
+					$conditions['Doc.type_id'] = $this->request->data['Doc']['type_id'];
+
+				if (!empty($this->request->data['Doc']['number']))
+					$conditions['Doc.number'] = $this->request->data['Doc']['number'];
+
+				debug($conditions);
+
+				$documents = $this->Doc->find(
+					'all',
+					array(
+						'conditions' => $conditions,
+						'contain' => array(
+							'Type.alias',
+							'Store.cod'
+						)
+					)
+				);
+
+				$this->set(compact('documents'));
+			}
+
+			$this->Doc->Type->virtualFields['name'] = 'CONCAT(Type.alias,\' (\',Type.name,\')\')';
+
+			$types = $this->Doc->Type->find(
+				'list',
+				array(
+					'fields' => array(
+						'Type.id',
+						'Type.name'
+					)
+				)
+			);
+
+			$this->set(compact('types'));
+
+			$potentials = $this->potential_matches_dte($id);
 		}
 
 		public function delete($id = null) {
@@ -249,12 +357,14 @@
 		 */
 		public function search($dte = true) {
 
+
+
 		}
 
 		/**
 		 * Método que exporta a PDF los DTE conciliados
 		 */
-		public function pdf($id = null, $type = null) {
+		public function pdf($id = null, $action = null) {
 			$data = $this->details($id, true, true);
 
 			if (empty($data['images'])) {
@@ -332,8 +442,8 @@
 
 			file_put_contents($tmp, $pdf);
 
-			if ($type == 'export') {
-				$this->folderExport = 'vendors' . DS . 'processed' . DS . date('Y', strtotime($data['details']['Doc']['processed'])) . DS . date('m', strtotime($data['details']['Doc']['processed'])) . DS . date('d', strtotime($data['details']['Doc']['processed']));
+			if ($action == 'export') {
+				$this->folderExport = 'vendors' . DS . 'processed' . DS . 'CUSTODIA' . DS . $data['details']['Store']['cod'] . DS . date('Y', strtotime($data['details']['Doc']['processed'])) . DS . date('m', strtotime($data['details']['Doc']['processed'])) . DS . date('d', strtotime($data['details']['Doc']['processed']));
 				$path = $dir = '';
 				foreach (explode(DS, $this->folderExport) AS $folder) {
 					$path.= DS . $folder;
@@ -343,7 +453,7 @@
 					}
 				}
 
-				$down = ROOT . $this->folderExport . DS . '(' . $data['details']['Doc']['number'] . ')' . '.pdf';
+				$down = ROOT . DS . $this->folderExport . DS . '(' . $data['details']['Doc']['number'] . ')' . '.pdf';
 			}
 
 			system("java -jar {$pd4ml} file:{$tmp} {$down}");
@@ -398,22 +508,22 @@
 		/**
 		 * Método que permite el envío masivo de los documentos conciliados.
 		 */
-		public function send() {
+		public function bulk_send() {
+
+		}
+
+		/**
+		 * Método que permite la impresión masiva de los documentos conciliados.
+		 */
+		public function bulk_print() {
 
 		}
 
 		/**
 		 * Método que permite la exportación masiva de los documentos conciliados.
 		 */
-		public function export($id = null) {
+		public function bulk_export($id = null) {
 			
-		}
-
-		/**
-		 * Método que permite la impresión masiva de los documentos conciliados.
-		 */
-		public function printout() {
-
 		}
 
 		public function import() {

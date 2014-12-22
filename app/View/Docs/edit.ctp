@@ -1,8 +1,7 @@
 <h1 class="page-header">
-<?php if ($details['Doc']['to_export']): ?>
-	<?php echo $this->Html->link(__('Ir a exportar'), array('controller' => 'docs', 'action' => 'export', $details['Doc']['id']), array('class' => 'btn btn-primary pull-right')); ?>
-<?php endif; ?>
-
+	<?php if ($details['Doc']['to_export']): ?>
+		<?php echo $this->Html->link(__('Ir a exportar'), array('controller' => 'docs', 'action' => 'pdf_export', $details['Doc']['id']), array('class' => 'btn btn-primary pull-right')); ?>
+	<?php endif; ?>
 	<?php echo __('Edición de %s Nº: %s', $details['Type']['name'], $details['Doc']['number'] ? $details['Doc']['number'] : '--'); ?>
 	<small><?php echo $details['Doc']['matched'] ? __('Documento conciliado') : __('Documento sin conciliar'); ?></small>
 </h1>
@@ -43,14 +42,14 @@
 </div>
 
 <?php if ($details['Doc']['dte']): ?>
-<h2 class="page-header"><?php echo __('Cedibles conciliados'); ?></h2>
+<h2 class="page-header"><?php echo __('Respaldos conciliados'); ?></h2>
 
 <div class="row">
 	<div class="col-xs-9 col-lg-7">
 		<?php echo __('* Solo se muestra la primera imagen de los cedibles asociados.'); ?>
 	</div>
 	<div class="col-xs-3 col-lg-5">
-		<?php echo $this->Html->link(__('+ Agregar documento'), array('iframe' => true, 'controller' => 'docs', 'action' => 'search'), array('class' => 'btn btn-block btn-success fancybox fancybox.iframe')); ?>
+		<?php echo $this->Html->link(__('+ Agregar respaldo'), array('iframe' => true, 'controller' => 'docs', 'action' => 'add', $details['Doc']['id']), array('class' => 'btn btn-block btn-success fancybox fancybox.iframe')); ?>
 	</div>
 </div>
 
@@ -79,7 +78,7 @@
 <?php else: ?>
 	<div class="col-lg-12">
 		<div class="alert alert-warning text-center">
-			<?php echo __('No hay documentos asociados a este DTE.'); ?>
+			<?php echo __('No hay respaldos asociados a este DTE.'); ?>
 		</div>
 	</div>
 <?php endif; ?>

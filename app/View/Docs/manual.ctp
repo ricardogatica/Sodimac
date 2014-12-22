@@ -42,7 +42,7 @@
 	<div class="col-lg-6">
 		<h2 class="page-header">
 			<?php echo $this->Html->link(__('Conciliar documentos'), array(), array('class' => 'submit btn btn-primary pull-right')) ?>
-			<?php echo __('Cedibles'); ?>
+			<?php echo __('Respaldos'); ?>
 		</h2>
 
 		<table class="table">
@@ -61,7 +61,7 @@
 				<tr>
 					<td colspan="6" class="text-center">
 						<div class="alert alert-info">
-							<?php echo __('No hay documentos cedibles para conciliar.'); ?>
+							<?php echo __('No hay documentos respaldos para conciliar.'); ?>
 						</div>
 					</td>
 				</tr>
