@@ -8,7 +8,6 @@
 			<thead>
 				<tr>
 					<th class="text-center"></th>
-					<th class="text-center">#</th>
 					<th class="text-center"><?php echo __('Tienda'); ?></th>
 					<th class="text-center"><?php echo __('Tipo'); ?></th>
 					<th class="text-center">#<?php echo __('DTE'); ?></th>
@@ -28,7 +27,6 @@
 			<?php foreach ($dtes AS $row): ?>
 				<tr>
 					<td class="text-center"><?php echo $this->Form->checkbox('dte.' . $row['Doc']['id'], array('value' => $row['Doc']['id'], 'class' => 'dte')); ?></td>
-					<td class="text-center"><?php echo $row['Doc']['id']; ?></td>
 					<td class="text-center"><?php echo $row['Store']['cod'] ? $row['Store']['cod'] : '--'; ?></td>
 					<td class="text-center"><?php echo $row['Type']['alias'] ? $row['Type']['alias'] : '--'; ?></td>
 					<td class="text-center"><?php echo $row['Doc']['number']; ?></td>
@@ -49,7 +47,6 @@
 			<thead>
 				<tr>
 					<th class="text-center"></th>
-					<th class="text-center">#</th>
 					<th class="text-center"><?php echo __('Tienda'); ?></th>
 					<th class="text-center"><?php echo __('Tipo'); ?></th>
 					<th class="text-center">#<?php echo __('Número'); ?></th>
@@ -69,7 +66,6 @@
 			<?php foreach ($docs AS $row): ?>
 				<tr>
 					<td class="text-center"><?php echo $this->Form->checkbox('doc.' . $row['Doc']['id'], array('value' => $row['Doc']['id'], 'class' => 'doc')); ?></td>
-					<td class="text-center"><?php echo $row['Doc']['id']; ?></td>
 					<td class="text-center"><?php echo $row['Store']['cod'] ? $row['Store']['cod'] : '--'; ?></td>
 					<td class="text-center"><?php echo $row['Type']['alias'] ? $row['Type']['alias'] : '--'; ?></td>
 					<td class="text-center"><?php echo $row['Doc']['number']; ?></td>
