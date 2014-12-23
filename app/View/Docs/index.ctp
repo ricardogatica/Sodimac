@@ -45,24 +45,26 @@
 		<table class="table">
 			<tfoot>
 				<tr>
-					<td colspan="6" width="50%">
+					<td colspan="4" width="30%">
 						<?php
 							echo $this->Form->select(
 								'bulk',
 								array(
 									'print' => __('Imprimir'),
-									'send' => __('Enviar'),
-									'export' => __('Exportar')
+									'send' => __('Enviar')
 								),
 								array(
 									'empty' => __('Acciones masivas'),
-									'style' => 'width:30%;margin-right:10px;',
+									'style' => 'width:50%;margin-right:10px;',
 									'class' => 'form-control pull-left'
 								)
 							);
 
 							echo $this->Form->submit(__('Ir'), array('div' => false, 'class' => 'btn btn-primary'));
 						?>
+					</td>
+					<td colspan="2" width="20%">
+						<?php echo $this->Html->link(__('Exportación masiva'), array('controller' => 'docs', 'action' => 'bulk_export'), array('class' => 'btn btn-success'), __('¿Realmente deseas exportar todos los documentos exportables?')); ?>
 					</td>
 					<td colspan="6" width="50%">
 						<?php echo $this->Paginator->pagination(array('ul' => 'pagination')); ?>
@@ -106,7 +108,7 @@
 			<?php endif; ?>
 			<?php foreach ($docs AS $row): ?>
 				<tr class="small <?php echo $row['Doc']['danger'] ? 'danger' : ''; ?> <?php echo ($row['Doc']['to_export']) ? 'success' : ''; ?>">
-					<td class="text-center"><?php echo $this->Form->checkbox('doc.' + $row['Doc']['id'], array('class' => 'checkbox')); ?></td>
+					<td class="text-center"><?php echo $this->Form->checkbox('doc.' + $row['Doc']['id'], array('class' => 'checkbox', 'value' => $row['Doc']['id'])); ?></td>
 					<td class="text-center"><?php echo $row['Store']['cod']; ?></td>
 					<td class="text-center"><?php echo $this->Time->format('d/m/Y', $row['Doc']['processed']); ?></td>
 
@@ -153,6 +155,17 @@
 </div>
 
 <script type="text/javascript">
+	$(document).on('change', '#bulk', function(event){
+		var self = $(this);
+
+		$('.checkbox:checked').each(function(i, element){
+
+			$(this).parent().parent().addClass('success');
+			if (self.val() == 'print')
+				window.open('<?php echo $this->Html->url(array('controller' => 'docs', 'action' => 'doc_print')); ?>/' + $(this).val(), 'print' + i, 'height=600,width=800');
+		});		
+	});
+
 	$(document).on('click', '.print,.send', function(event){
 		$(this).parent().parent().parent().parent().parent().addClass('success');
 	});

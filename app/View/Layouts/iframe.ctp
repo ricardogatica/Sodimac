@@ -33,6 +33,9 @@
 		});
 	</script>
 	<style type="text/css">
+		tfoot .pagination {
+			margin: 0;
+		}
 		.text-muted {
 			color: #ccc;
 		}

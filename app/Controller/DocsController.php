@@ -462,13 +462,15 @@
 					}
 				}
 
-				$down = ROOT . DS . $this->folderExport . DS . '(' . $data['details']['Doc']['number'] . ')' . '.pdf';
+				$down = ROOT . DS . $this->folderExport . DS . $data['details']['Doc']['number'] . '.pdf';
 			}
 
 			system("java -jar {$pd4ml} file:{$tmp} {$down}");
-			
-			//$filename = explode('.', basename($_down));
-			//rename($_down, $_down = dirname($_down) . DS . '(' . $filename['0'] . ').'.$filename['1']);
+
+			if ($action == 'export') {
+				$filename = explode('.', basename($down));
+				rename($down, $down = dirname($down) . DS . '(' . $filename['0'] . ').'.$filename['1']);
+			}
 
 			sleep(1);
 
@@ -481,7 +483,8 @@
 			$this->Doc->id = $data['details']['Doc']['id'];
 			$this->Doc->saveField('sent', 1);
 
-			$path = $this->pdf($data['details']['Doc']['id']);
+			$this->Session->setFlash(__('Se ha enviado el documento exitosamente.'), 'alert', array('plugin' => 'BoostCake', 'class' => 'alert-success'));
+			$this->redirect('/');
 		}
 
 		public function doc_print($id) {
@@ -518,7 +521,8 @@
 		 * Método que permite el envío masivo de los documentos conciliados.
 		 */
 		public function bulk_send() {
-
+			$this->Session->setFlash(__('Se ha enviararon los documentos de forma exitosa.'), 'alert', array('plugin' => 'BoostCake', 'class' => 'alert-success'));
+			$this->redirect('/');
 		}
 
 		/**
@@ -531,8 +535,43 @@
 		/**
 		 * Método que permite la exportación masiva de los documentos conciliados.
 		 */
-		public function bulk_export($id = null) {
+		public function bulk_export() {
+			$conditions = array(
+				'Doc.matched' => 1,
+				'Doc.dte' => 1,
+				'Doc.exported' => 0,
+				'OR' => array(
+					'Doc.printed' => 1,
+					'Doc.sent' => 1
+				)
+			);
+
+			if (!Configure::read('debug'))
+				$conditions['Doc.store_id'] = array_keys($this->stores_users_active);
 			
+			$docs = $this->Doc->find(
+				'all',
+				array(
+					'conditions' => $conditions
+				)
+			);
+
+			foreach ($docs AS $row) {
+				$this->pdf($row['Doc']['id'], 'export');
+				$this->details = array();
+
+				$this->Doc->id = $row['Doc']['id'];
+				$this->Doc->saveField('exported', 1);
+			}
+
+			if (empty($docs)) {
+				$this->Session->setFlash(__('No hay DTE para respaldar.'));
+			}
+			else {
+				$this->Session->setFlash(__('Se han respaldado todos los DTE.'));
+			}
+
+			$this->redirect('/');
 		}
 
 		public function import() {
