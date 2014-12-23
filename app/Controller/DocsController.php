@@ -790,14 +790,7 @@
 		 */
 		public function push($origin_id = 0, $destiny_id = 0) {
 			$data = $this->details($destiny_id);
-
-			if ($data['details']['Doc']['dte']) {
-				$this->Doc->updateAll(array('parent_id' => $destiny_id), array('Doc.id' => $origin_id));
-			}
-			else {
-				$this->Doc->id = $origin_id;
-				$this->Doc->saveField('parent_id', $destiny_id);
-			}
+			$this->Doc->updateAll(array('parent_id' => $destiny_id, 'matched' => 1), array('Doc.id' => $origin_id));
 		}
 
 		public function potential_matches_dte($id = null) {
