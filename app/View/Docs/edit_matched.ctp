@@ -46,7 +46,6 @@
 
 		<?php echo $this->Form->hidden('Doc.' . $row['Doc']['id'] . '.id'); ?>
 		<?php echo $this->Form->hidden('Doc.' . $row['Doc']['id'] . '.matched'); ?>
-		<?php echo $this->Form->input('Doc.' . $row['Doc']['id'] . '.store_id', array('label' => __('Tienda'), 'options' => $stores_users)); ?>
 		<?php echo $this->Form->input('Doc.' . $row['Doc']['id'] . '.type_id', array('label' => __('Tipo Documento'), 'options' => $types)); ?>
 		<?php echo $this->Form->input('Doc.' . $row['Doc']['id'] . '.number', array('type' => 'text', 'label' => __('Nº Documento'))); ?>
 		<?php echo $this->Form->input('Doc.' . $row['Doc']['id'] . '.company', array('type' => 'text', 'label' => __('Razón Social'))); ?>

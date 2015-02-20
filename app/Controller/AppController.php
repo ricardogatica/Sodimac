@@ -50,7 +50,8 @@
 
 			$profiles = array(
 				'admin' => __('Administrador'),
-				'user' => __('Usuario')
+				'conciliador' => __('Conciliador'),
+				'verificador' => __('Verificador')
 			);
 
 			if (AuthComponent::user('id')) {
@@ -86,7 +87,7 @@
 						CakeSession::write('StoreActive', $this->request->query['active_store']);
 					}
 					
-					$this->redirect($this->referer());
+					$this->redirect('/');
 				}
 
 				if (CakeSession::check('StoreActive')) {

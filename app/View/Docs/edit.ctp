@@ -28,7 +28,6 @@
 			);
 		?>
 
-		<?php echo $this->Form->input('store_id', array('label' => __('Tienda'), 'options' => $stores_users)); ?>
 		<?php echo $this->Form->input('type_id', array('label' => __('Tipo Documento'), 'options' => $types)); ?>
 		<?php echo $this->Form->input('number', array('type' => 'text', 'label' => __('Nº Documento'))); ?>
 		<?php echo $this->Form->input('company', array('type' => 'text', 'label' => __('Razón Social'))); ?>
