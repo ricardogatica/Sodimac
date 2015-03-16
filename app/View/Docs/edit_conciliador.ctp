@@ -9,6 +9,17 @@
 <div class="row">
 	<div class="col-xs-6 col-md-6 col-lg-6">
 		<?php
+			if (!empty($details['Doc']['images'])):
+				$image = current($details['Doc']['images']);
+		?>
+
+			<?php echo $this->Html->link($this->Html->image($image['normal'], array('class' => 'img-responsive preview', 'data-zoom-image' => $this->Html->url($image['zoom']))), $image['normal'], array('escape' => false, 'target' => '_blank')); ?>
+
+		<?php endif; ?>
+
+		<div class="clearfix"></div>
+		
+		<?php
 			echo $this->Form->create(
 				'Doc',
 				array(
@@ -33,17 +44,6 @@
 			<?php echo $this->Form->input('Doc.' . $details['Doc']['id'] . '.npvt', array('type' => 'text', 'label' => __('Nº PVT'))); ?>
 			<?php echo $this->Form->submit(__('Guardar'), array('class' => 'btn btn-primary')); ?>
 		<?php echo $this->Form->end(); ?>
-
-		<div class="clearfix"></div>
-
-		<?php
-			if (!empty($details['Doc']['images'])):
-				$image = current($details['Doc']['images']);
-		?>
-
-			<?php echo $this->Html->link($this->Html->image($image['normal'], array('class' => 'img-responsive preview', 'data-zoom-image' => $this->Html->url($image['zoom']))), $image['normal'], array('escape' => false, 'target' => '_blank')); ?>
-
-		<?php endif; ?>
 	</div>
 
 	<div class="col-xs-6 col-md-6 col-lg-6">
@@ -59,6 +59,24 @@
 
 				<?php foreach ($documents AS $key => $doc): ?>
 				<div role="tabpanel" class="tab-pane <?php echo !$key ? 'active' : ''; ?>" id="<?php echo $doc['Type']['alias'] . $doc['Doc']['number']; ?>">
+
+					<nav>
+						<ul class="pagination">
+						<?php foreach ($doc['Doc']['images'] AS $key => $image): ?>
+							<li><a href="#doc<?php echo $doc['Doc']['id'] . $image['id']; ?>"><?php echo $key + 1; ?></a></li>
+						<?php endforeach; ?>
+						</ul>
+					</nav>
+					<div class="slides">
+						<?php foreach ($doc['Doc']['images'] AS $key => $image): ?>
+						<div class="slide" id="doc<?php echo $doc['Doc']['id'] . $image['id']; ?>">
+							<?php echo $this->Html->link($this->Html->image($image['normal'], array('class' => 'img-responsive preview', 'data-zoom-image' => $this->Html->url($image['zoom']))), $image['normal'], array('escape' => false, 'target' => '_blank')); ?>
+						</div>
+						<?php endforeach; ?>
+					</div>
+
+					<div class="clearfix"></div>
+
 					<?php
 						echo $this->Form->create(
 							'Doc',
@@ -84,23 +102,6 @@
 						<?php echo $this->Form->input('Doc.' . $doc['Doc']['id'] . '.npvt', array('type' => 'text', 'label' => __('Nº PVT'))); ?>
 						<?php echo $this->Form->submit(__('Guardar'), array('class' => 'btn btn-primary')); ?>
 					<?php echo $this->Form->end(); ?>
-
-					<div class="clearfix"></div>
-
-					<nav>
-						<ul class="pagination">
-						<?php foreach ($doc['Doc']['images'] AS $key => $image): ?>
-							<li><a href="#doc<?php echo $doc['Doc']['id'] . $image['id']; ?>"><?php echo $key + 1; ?></a></li>
-						<?php endforeach; ?>
-						</ul>
-					</nav>
-					<div class="slides">
-						<?php foreach ($doc['Doc']['images'] AS $key => $image): ?>
-						<div class="slide" id="doc<?php echo $doc['Doc']['id'] . $image['id']; ?>">
-							<?php echo $this->Html->link($this->Html->image($image['normal'], array('class' => 'img-responsive preview', 'data-zoom-image' => $this->Html->url($image['zoom']))), $image['normal'], array('escape' => false, 'target' => '_blank')); ?>
-						</div>
-						<?php endforeach; ?>
-					</div>
 
 				</div>
 				<?php endforeach; ?>

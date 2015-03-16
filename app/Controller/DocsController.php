@@ -234,7 +234,7 @@
 		public function edit_matched($id = null) {
 			$data = $this->details($id, null, true);
 
-			if (AuthComponent::user('profile') == 'admin') {
+			if (in_array(AuthComponent::user('profile'), array('admin', 'conciliado'))) {
 				$this->view = 'edit_conciliador';
 			}
 
