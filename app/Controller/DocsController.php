@@ -234,6 +234,10 @@
 		public function edit_matched($id = null) {
 			$data = $this->details($id, null, true);
 
+			if (AuthComponent::user('profile') == 'admin') {
+				$this->view = 'edit_conciliador';
+			}
+
 			if (!empty($this->request->data)) {
 				foreach ($this->request->data['Doc'] AS $post) {
 					$this->Doc->id = $post['id'];
@@ -265,8 +269,9 @@
 			}
 
 			foreach ($docs AS $row) {
-				if (empty($this->request->data['Doc'][$row['Doc']['id']]))
+				if (empty($this->request->data['Doc'][$row['Doc']['id']])) {
 					$this->request->data['Doc'][$row['Doc']['id']] = $row['Doc'];
+				}
 			}
 
 			$this->set(compact('docs'));
@@ -282,8 +287,6 @@
 					)
 				)
 			);
-
-			
 
 			$this->set(compact('types'));
 		}

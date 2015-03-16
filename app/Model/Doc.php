@@ -56,6 +56,7 @@
 						}
 
 						$images[] = array(
+							'id' => $i,
 							'path' => $image,
 							'normal' => $image_normal,
 							'zoom' => $image_zoom

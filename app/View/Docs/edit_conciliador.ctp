@@ -1,0 +1,122 @@
+<h1 class="page-header">
+	<?php if ($details['Doc']['to_export']): ?>
+		<?php echo $this->Html->link(__('Ir a exportar'), array('controller' => 'docs', 'action' => 'pdf_export', $details['Doc']['id']), array('class' => 'btn btn-primary pull-right')); ?>
+	<?php endif; ?>
+	<?php echo __('Edición de %s Nº: %s', $details['Type']['name'], $details['Doc']['number'] ? $details['Doc']['number'] : '--'); ?>
+	<small><?php echo $details['Doc']['matched'] ? __('Documento conciliado') : __('Documento sin conciliar'); ?></small>
+</h1>
+
+<div class="row">
+	<div class="col-xs-6 col-md-6 col-lg-6">
+		<?php
+			echo $this->Form->create(
+				'Doc',
+				array(
+					'inputDefaults' => array(
+						'class' => 'form-control input-lg',
+						'div' => array(
+							'class' => 'form-group'
+						),
+						'wrapInput' => false
+					)
+				)
+			);
+		?>
+			<?php echo $this->Form->hidden('Doc.' . $details['Doc']['id'] . '.id'); ?>
+			<?php echo $this->Form->hidden('Doc.' . $details['Doc']['id'] . '.matched'); ?>
+			<?php echo $this->Form->input('Doc.' . $details['Doc']['id'] . '.type_id', array('label' => __('Tipo Documento'), 'options' => $types)); ?>
+			<?php echo $this->Form->input('Doc.' . $details['Doc']['id'] . '.number', array('type' => 'text', 'label' => __('Nº Documento'))); ?>
+			<?php echo $this->Form->input('Doc.' . $details['Doc']['id'] . '.company', array('type' => 'text', 'label' => __('Razón Social'))); ?>
+			<?php echo $this->Form->input('Doc.' . $details['Doc']['id'] . '.document', array('type' => 'text', 'label' => __('RUT'))); ?>
+			<?php echo $this->Form->input('Doc.' . $details['Doc']['id'] . '.noc', array('type' => 'text', 'label' => __('Nro. OC Cliente'))); ?>
+			<?php echo $this->Form->input('Doc.' . $details['Doc']['id'] . '.ngd', array('type' => 'text', 'label' => __('Nro. Guía de Despacho'))); ?>
+			<?php echo $this->Form->input('Doc.' . $details['Doc']['id'] . '.npvt', array('type' => 'text', 'label' => __('Nº PVT'))); ?>
+			<?php echo $this->Form->submit(__('Guardar'), array('class' => 'btn btn-primary')); ?>
+		<?php echo $this->Form->end(); ?>
+
+		<div class="clearfix"></div>
+
+		<?php
+			if (!empty($details['Doc']['images'])):
+				$image = current($details['Doc']['images']);
+		?>
+
+			<?php echo $this->Html->link($this->Html->image($image['normal'], array('class' => 'img-responsive preview', 'data-zoom-image' => $this->Html->url($image['zoom']))), $image['normal'], array('escape' => false, 'target' => '_blank')); ?>
+
+		<?php endif; ?>
+	</div>
+
+	<div class="col-xs-6 col-md-6 col-lg-6">
+		<div role="tabpanel">
+			<ul class="nav nav-tabs" role="tablist">
+			<?php foreach ($documents AS $key => $doc): ?>
+				<li role="presentation" class="<?php echo !$key ? 'active' : ''; ?>">
+					<?php echo $this->Html->link(sprintf('%s: %s', $doc['Type']['alias'], $doc['Doc']['number']), '#' . $doc['Type']['alias'] . $doc['Doc']['number'], array('aria-controls' => 'settings', 'role' => 'tab', 'data-toggle' => 'tab')); ?>
+				</li>
+			<?php endforeach; ?>
+			</ul>
+			<div class="tab-content">
+
+				<?php foreach ($documents AS $key => $doc): ?>
+				<div role="tabpanel" class="tab-pane <?php echo !$key ? 'active' : ''; ?>" id="<?php echo $doc['Type']['alias'] . $doc['Doc']['number']; ?>">
+					<?php
+						echo $this->Form->create(
+							'Doc',
+							array(
+								'inputDefaults' => array(
+									'class' => 'form-control input-lg',
+									'div' => array(
+										'class' => 'form-group'
+									),
+									'wrapInput' => false
+								)
+							)
+						);
+					?>
+						<?php echo $this->Form->hidden('Doc.' . $doc['Doc']['id'] . '.id'); ?>
+						<?php echo $this->Form->hidden('Doc.' . $doc['Doc']['id'] . '.matched'); ?>
+						<?php echo $this->Form->input('Doc.' . $doc['Doc']['id'] . '.type_id', array('label' => __('Tipo Documento'), 'options' => $types)); ?>
+						<?php echo $this->Form->input('Doc.' . $doc['Doc']['id'] . '.number', array('type' => 'text', 'label' => __('Nº Documento'))); ?>
+						<?php echo $this->Form->input('Doc.' . $doc['Doc']['id'] . '.company', array('type' => 'text', 'label' => __('Razón Social'))); ?>
+						<?php echo $this->Form->input('Doc.' . $doc['Doc']['id'] . '.document', array('type' => 'text', 'label' => __('RUT'))); ?>
+						<?php echo $this->Form->input('Doc.' . $doc['Doc']['id'] . '.noc', array('type' => 'text', 'label' => __('Nro. OC Cliente'))); ?>
+						<?php echo $this->Form->input('Doc.' . $doc['Doc']['id'] . '.ngd', array('type' => 'text', 'label' => __('Nro. Guía de Despacho'))); ?>
+						<?php echo $this->Form->input('Doc.' . $doc['Doc']['id'] . '.npvt', array('type' => 'text', 'label' => __('Nº PVT'))); ?>
+						<?php echo $this->Form->submit(__('Guardar'), array('class' => 'btn btn-primary')); ?>
+					<?php echo $this->Form->end(); ?>
+
+					<div class="clearfix"></div>
+
+					<nav>
+						<ul class="pagination">
+						<?php foreach ($doc['Doc']['images'] AS $key => $image): ?>
+							<li><a href="#doc<?php echo $doc['Doc']['id'] . $image['id']; ?>"><?php echo $key + 1; ?></a></li>
+						<?php endforeach; ?>
+						</ul>
+					</nav>
+					<div class="slides">
+						<?php foreach ($doc['Doc']['images'] AS $key => $image): ?>
+						<div class="slide" id="doc<?php echo $doc['Doc']['id'] . $image['id']; ?>">
+							<?php echo $this->Html->link($this->Html->image($image['normal'], array('class' => 'img-responsive preview', 'data-zoom-image' => $this->Html->url($image['zoom']))), $image['normal'], array('escape' => false, 'target' => '_blank')); ?>
+						</div>
+						<?php endforeach; ?>
+					</div>
+
+				</div>
+				<?php endforeach; ?>
+
+			</div>
+		</div>
+	
+	</div>
+</div>
+
+<?php if ($details['Doc']['dte']): ?>
+
+<div class="row">
+	<div class="col-lg-12">
+		<?php echo $this->Html->link(__('+ Agregar respaldo'), array('iframe' => true, 'controller' => 'docs', 'action' => 'add', $details['Doc']['id']), array('class' => 'btn btn-block btn-success fancybox fancybox.iframe')); ?>
+	</div>
+</div>
+
+<?php endif; ?>

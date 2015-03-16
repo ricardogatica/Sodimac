@@ -20,6 +20,9 @@
 
 	<?php echo $this->Html->css(array('/js/fancybox/jquery.fancybox.css')); ?>
 	<?php echo $this->Html->script(array('jquery.elevateZoom-3.0.8.min.js', 'fancybox/jquery.fancybox.pack.js')); ?>
+
+	<?php echo $this->Html->script('https://cdnjs.cloudflare.com/ajax/libs/slidesjs/3.0/jquery.slides.min.js'); ?>
+
 	<script type="text/javascript">
 		$(document).ready(function(){
 			$('#previewDocument, .preview').on('load', function(){
@@ -27,6 +30,34 @@
 					zoomType: 'inner',
 					cursor: 'crosshair'
 				});
+			});
+
+
+			$('.slides').each(function(){
+				var self = $(this);
+				var slides = self.find('> .slide')
+				var array_max = Function.prototype.apply.bind(Math.max, null);
+
+				slide_width = 0;
+				slide_height = [];
+				slides.each(function(i, element){
+					var that = $(element);
+					that.width(that.outerWidth()).addClass('pull-left').css({position:'absolute',left:slide_width + 'px'});
+					slide_width+= that.outerWidth();
+					slide_height[i] = that.outerHeight();
+					$('a[href=#' + that.attr('id') + ']').attr('rel', slide_width).bind('click', function(){
+						that.parent().animate({'right' : ($(this).attr('rel') - that.outerWidth()) + 'px'}, 200)
+						return false;
+					});
+				});
+					
+				slides
+				.parent()
+				.width(slide_width)
+				.height(array_max(slide_height))
+				.css({position:'relative'})
+				.parent()
+				.css({overflow:'hidden',position:'relative'});
 			});
 
 			$('.fancybox').fancybox();
