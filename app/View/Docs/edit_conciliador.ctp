@@ -13,7 +13,9 @@
 				$image = current($details['Doc']['images']);
 		?>
 
-			<?php echo $this->Html->link($this->Html->image($image['normal'], array('class' => 'img-responsive preview', 'data-zoom-image' => $this->Html->url($image['zoom']))), $image['normal'], array('escape' => false, 'target' => '_blank')); ?>
+			<div class="thumbnail" style="overflow:hidden;height:500px;">
+			<?php echo $this->Html->link($this->Html->image($image['normal'], array('class' => 'img-responsive', 'data-zoom-image' => $this->Html->url($image['zoom']))), $image['normal'], array('escape' => false, 'target' => '_blank')); ?>
+			</div>
 
 		<?php endif; ?>
 
@@ -69,8 +71,8 @@
 					</nav>
 					<div class="slides">
 						<?php foreach ($doc['Doc']['images'] AS $key => $image): ?>
-						<div class="slide" id="doc<?php echo $doc['Doc']['id'] . $image['id']; ?>">
-							<?php echo $this->Html->link($this->Html->image($image['normal'], array('class' => 'img-responsive preview', 'data-zoom-image' => $this->Html->url($image['zoom']))), $image['normal'], array('escape' => false, 'target' => '_blank')); ?>
+						<div class="slide thumbnail" id="doc<?php echo $doc['Doc']['id'] . $image['id']; ?>" style="overflow:hidden;height:500px;">
+							<?php echo $this->Html->link($this->Html->image($image['normal'], array('class' => 'img-responsive', 'data-zoom-image' => $this->Html->url($image['zoom']))), $image['normal'], array('escape' => false, 'target' => '_blank')); ?>
 						</div>
 						<?php endforeach; ?>
 					</div>
