@@ -19,9 +19,7 @@
 	?>
 
 	<?php echo $this->Html->css(array('/js/fancybox/jquery.fancybox.css')); ?>
-	<?php echo $this->Html->script(array('jquery.elevateZoom-3.0.8.min.js', 'fancybox/jquery.fancybox.pack.js')); ?>
-
-	<?php echo $this->Html->script('https://cdnjs.cloudflare.com/ajax/libs/slidesjs/3.0/jquery.slides.min.js'); ?>
+	<?php echo $this->Html->script(array('jquery.elevateZoom-3.0.8.min.js', 'fancybox/jquery.fancybox.pack.js', 'jquery.slides.min.js')); ?>
 
 	<script type="text/javascript">
 		$(document).ready(function(){

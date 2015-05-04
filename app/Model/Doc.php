@@ -5,6 +5,7 @@
 	class Doc extends AppModel {
 		public $belongsTo = array(
 			'Store',
+			'Status',
 			'Type' => array(
 				'className' => 'DocType'
 			)

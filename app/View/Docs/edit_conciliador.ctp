@@ -1,4 +1,26 @@
 <h1 class="page-header">
+
+	<div class="btn-group pull-right">
+		<button type="button" class="btn btn-lg btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+			<?php echo __('Opciones'); ?> <span class="caret"></span>
+		</button>
+	<?php
+		$options = array();
+
+		if ($details['Doc']['matched']) {
+			$options[] = $this->Html->link(__('Imprimir'), array('controller' => 'docs', 'action' => 'doc_print', $details['Doc']['id']), array('class' => 'fancybox print', 'target' => '_blank'));
+
+			$options[] = $this->Html->link(__('Enviar'), array('controller' => 'docs', 'action' => 'doc_send', $details['Doc']['id']), array('class' => 'fancybox send'));
+
+			$options[] = $this->Html->link(__('Exportar'), array('controller' => 'docs', 'action' => 'doc_export', $details['Doc']['id']), array('class' => 'fancybox'));
+		}
+
+		$options[] = $this->Html->link(__('Eliminar'), array('controller' => 'docs', 'action' => 'delete', $details['Doc']['id']), array(), __('¿Realmente deseas eliminar el documento?'));
+
+		echo $this->Html->nestedList($options, array('class' => 'dropdown-menu pull-right', 'role' => 'menu'));
+	?>
+	</div>
+
 	<?php if ($details['Doc']['to_export']): ?>
 		<?php echo $this->Html->link(__('Ir a exportar'), array('controller' => 'docs', 'action' => 'pdf_export', $details['Doc']['id']), array('class' => 'btn btn-primary pull-right')); ?>
 	<?php endif; ?>
@@ -94,7 +116,7 @@
 						<?php endforeach; ?>
 						</ul>
 					</nav>
-					<div class="slides" style="height:500px;">
+					<div class="slides" style="height:500px;margin-bottom:20px;">
 						<?php if (empty($doc['Doc']['images'])): ?>
 							<h1><?php echo __('Sin imagen'); ?></h1>
 						<?php endif; ?>
@@ -143,6 +165,10 @@
 </div>
 
 <?php if ($details['Doc']['dte']): ?>
+
+<div class="clearfix"></div>
+
+<br />
 
 <div class="row">
 	<div class="col-lg-12">

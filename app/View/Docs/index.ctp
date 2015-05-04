@@ -139,7 +139,7 @@
 								$options[] = $this->Html->link(__('Exportar'), array('controller' => 'docs', 'action' => 'doc_export', $row['Doc']['id']), array('class' => 'fancybox'));
 							}
 
-							$options[] = $this->Html->link(__('Eliminar'), array('controller' => 'docs', 'action' => 'delete'), array(), __('¿Realmente deseas eliminar el documento?'));
+							$options[] = $this->Html->link(__('Eliminar'), array('controller' => 'docs', 'action' => 'delete', $row['Doc']['id']), array(), __('¿Realmente deseas eliminar el documento?'));
 
 							echo $this->Html->nestedList($options, array('class' => 'dropdown-menu pull-right', 'role' => 'menu'));
 						?>

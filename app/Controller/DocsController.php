@@ -9,6 +9,24 @@
 
 		public $details = array();
 
+		public function ftp() {
+
+			$from = WWW_ROOT . 'pdf';
+			$to = '\\';
+
+			if (DS === '/') {
+				exec('sh ' . WWW_ROOT . 'ftpcmd.sh ' . $from . ' ' . $to, $output);
+			}
+			else {
+				// http://www.dostips.com/DtTipsFtpBatchScript.php
+				// http://nixcraft.com/showthread.php/12018-Windows-FTP-Upload-Script-and-Scheduled-Job
+				exec('cmd ', $output);
+			}
+
+			debug($output);
+			die;
+		}
+
 		public function index($type = 'matched') {
 			$conditions = array();
 
@@ -468,7 +486,7 @@
 				$down = ROOT . DS . $this->folderExport . DS . $data['details']['Doc']['number'] . '.pdf';
 			}
 
-			system("java -jar {$pd4ml} file:{$tmp} {$down}");
+			system("java -jar {$pd4ml} file:{$tmp} {$down}", $out);
 
 			if ($action == 'export') {
 				$filename = explode('.', basename($down));
